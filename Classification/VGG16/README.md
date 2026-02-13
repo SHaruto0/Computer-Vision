@@ -124,3 +124,4 @@ python inference.py
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
 - Modify `DOWNLOAD` variable to prepare the dataset or skip downloading.
 - Once processed, you can download and create your own dataset.
+- Also create a dataset for configs.
