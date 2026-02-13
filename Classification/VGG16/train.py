@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from models.vgg import VGG16
+from models.vgg16 import VGG16
 from dataset import ImageNetDataset, build_transforms
 from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, VGG_CFG
 

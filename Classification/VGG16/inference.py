@@ -8,7 +8,7 @@ from PIL import Image
 from collections import Counter
 import matplotlib.pyplot as plt
 
-from models.vgg import VGG16
+from models.vgg16 import VGG16
 from dataset import ImageNetDataset, build_transforms
 from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
