@@ -1,8 +1,6 @@
-import os
 import random
 import shutil
 import kagglehub
-import numpy as np
 from tqdm import tqdm
 from PIL import Image
 from pathlib import Path
