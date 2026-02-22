@@ -60,7 +60,7 @@ def train():
     output_dir = BASE_PATH / Path("outputs/checkpoints")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    start_epoch = 0
+    start_epoch = 1
     best_acc = 0.0
 
     loss_history = []
@@ -98,7 +98,7 @@ def train():
         running_loss = 0.0
         correct_train = 0
         total_train = 0
-        for images, labels in tqdm(train_loader, desc=f"[Train] Epoch {epoch+1}/{num_epochs}"):
+        for images, labels in tqdm(train_loader, desc=f"[Train] Epoch {epoch}/{num_epochs}"):
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
@@ -122,7 +122,7 @@ def train():
         correct_test = 0
         total_test = 0
         with torch.no_grad():
-            for images, labels in tqdm(test_loader, desc=f"[Test] Epoch {epoch+1}/{num_epochs}"):
+            for images, labels in tqdm(test_loader, desc=f"[Test] Epoch {epoch}/{num_epochs}"):
                 images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 _, preds = torch.max(outputs, 1)
@@ -135,7 +135,7 @@ def train():
         epoch_time = time.time() - start_time
         epoch_times.append(epoch_time)
 
-        print(f"Epoch {epoch+1} | Loss: {epoch_loss:.4f} | Train Acc: {train_acc*100:.2f}% | Test Acc: {test_acc*100:.2f}% | Time: {epoch_time:.2f}s")
+        print(f"Epoch {epoch} | Loss: {epoch_loss:.4f} | Train Acc: {train_acc*100:.2f}% | Test Acc: {test_acc*100:.2f}% | Time: {epoch_time:.2f}s")
 
         # Save plots
         save_training_plots(

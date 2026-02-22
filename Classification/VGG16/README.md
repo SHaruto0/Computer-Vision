@@ -8,16 +8,16 @@ This project implements and trains a VGG16-style CNN in PyTorch for image classi
 
 - ImageNet-style folder structure:
 
-```py
+```
 data/imagenet/
 ├── train/
-│ ├── abacus/
-│ ├── abaya/
-│ └── ...
+│   ├── abacus/
+│   ├── abaya/
+│   └── ...
 └── test/
-├── abacus/
-├── abaya/
-└── ...
+    ├── abacus/
+    ├── abaya/
+    └── ...
 ```
 
 - Image size: 224×224
@@ -83,17 +83,18 @@ Top 10 most confused class pairs (true -> predicted):
 
 **Plots:**
 
-- Loss plot: `outputs/plots/loss.png`  
-  ![Loss Plot](outputs/plots/loss.png)
+<div align="center">
 
-- Accuracy plot: `outputs/plots/accuracy.png`  
-  ![Accuracy Plot](outputs/plots/accuracy.png)
+| Loss                                 | Accuracy                                     | Epoch Time                                       |
+| ------------------------------------ | -------------------------------------------- | ------------------------------------------------ |
+| ![Loss Plot](outputs/plots/loss.png) | ![Accuracy Plot](outputs/plots/accuracy.png) | ![Epoch Time Plot](outputs/plots/epoch_time.png) |
 
-- Epoch time plot: `outputs/plots/epoch_time.png`  
-  ![Epoch Time Plot](outputs/plots/epoch_time.png)
+<br>
 
-- Sample images of most confused pairs: `outputs/plots/most_confused_pairs_samples.png`  
-  ![Sample Confused Pairs](outputs/plots/most_confused_pairs_samples.png)
+Sample images of most confused pairs (left two images form one pair, right two images form another pair):<br>
+<img src="outputs/plots/most_confused_pairs_samples.png" width="400px">
+
+</div>
 
 ---
 
@@ -123,5 +124,6 @@ python inference.py
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
 - Modify `DOWNLOAD` variable to prepare the dataset or skip downloading.
-- Once processed, you can download and create your own dataset.
-- Also create a dataset for configs.
+- Once processed, you can download and create your own dataset. You should for this dataset.
+- Also create a dataset for configs called `VGG16 Config`
+- When inferencing, initialize a model named `VGG16` and upload the corresponding model checkpoint parameters.

@@ -1,6 +1,6 @@
 input_size: 224
 epochs: 100
-start_from: 99
+start_from: None
 
 lr: 0.01
 momentum: 0.9
