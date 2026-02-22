@@ -21,7 +21,8 @@ def download_data(data_dir):
     print("Path to dataset files:", download_path)
 
     print(f"Moving data into {data_dir} ...")
-    shutil.move(download_path, data_dir)
+    for content_path in Path(download_path).iterdir():
+        shutil.move(content_path, data_dir)
     print("Moving complete!")
     return data_dir
 
