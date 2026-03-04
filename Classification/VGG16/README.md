@@ -6,6 +6,8 @@ This project implements and trains a VGG16-style CNN in PyTorch for image classi
 
 ## Dataset
 
+https://www.kaggle.com/datasets/dimensi0n/imagenet-256
+
 - ImageNet-style folder structure:
 
 ```

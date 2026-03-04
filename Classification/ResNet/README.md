@@ -8,6 +8,8 @@ All architectures use Bottleneck residual blocks and follow the original ResNet 
 
 ## Dataset
 
+https://www.kaggle.com/datasets/gpiosenka/sports-classification
+
 ```
 data/sports/
 ├── train/
