@@ -8,6 +8,8 @@ This project implements and trains a VGG16-style CNN in PyTorch for image classi
 
 https://www.kaggle.com/datasets/dimensi0n/imagenet-256
 
+Download the dataset on your computer and preprocess the data by running `dataset.py`
+
 - ImageNet-style folder structure:
 
 ```
@@ -102,21 +104,21 @@ Sample images of most confused pairs (left two images form one pair, right two i
 
 ## Running
 
-### Local Computer
-
-1. Prepare dataset:
+Prepare dataset:
 
 ```bash
 python dataset.py
 ```
 
-2. Train model:
+### Local Computer
+
+1. Train model:
 
 ```bash
 python train.py
 ```
 
-3. Run inference:
+2. Run inference:
 
 ```bash
 python inference.py
@@ -125,7 +127,5 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
-- Modify `DOWNLOAD` variable to prepare the dataset or skip downloading.
-- Once processed, you can download and create your own dataset. You should for this dataset.
-- Also create a dataset for configs called `VGG16 Config`
+- Create a dataset for configs called `VGG16 Config` and upload the processed train/test data created from `dataset.py` 
 - When inferencing, initialize a model named `VGG16` and upload the corresponding model checkpoint parameters.

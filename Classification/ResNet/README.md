@@ -267,7 +267,4 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
-- Modify the `DOWNLOAD` variable to prepare the dataset or skip downloading.
-- Once processed, you can download and create your own dataset. You don't need to for this dataset.
-- Also create a dataset for configs called `ResNet`.
 - When inferencing, initialize a model named `ResNet` and upload the corresponding model checkpoint parameters.
