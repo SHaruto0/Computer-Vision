@@ -42,7 +42,7 @@ def train(model_name):
                               drop_last=True)
     test_loader = DataLoader(test_dataset, 
                               batch_size=DATA_CFG["batch_size"], 
-                              shuffle=True, 
+                              shuffle=False, 
                               num_workers=DATA_CFG["num_workers"],
                               drop_last=True)
 
@@ -50,12 +50,13 @@ def train(model_name):
     if model_name == "wrn28_10":
         model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
    
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
     optimizer = optim.SGD(
         model.parameters(),
         lr=float(WRN_CFG.get("lr", 0.001)),
         momentum=float(WRN_CFG.get("momentum", 0.9)),
         weight_decay=float(WRN_CFG.get("weight_decay", 1e-4)),
+        nesterov=True
     )
     scheduler = optim.lr_scheduler.StepLR(
         optimizer,
