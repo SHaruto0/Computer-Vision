@@ -48,7 +48,7 @@ def train(model_name):
 
     # Model, loss, optimizer
     if model_name == "wrn28_10":
-        model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100), withDropout=True).to(device)
    
     criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
     optimizer = optim.SGD(
