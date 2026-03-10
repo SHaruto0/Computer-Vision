@@ -28,7 +28,6 @@ def build_transforms(image_size=32, train=True):
         return T.Compose([
             T.RandomCrop(image_size, padding=4),
             T.RandomHorizontalFlip(),
-            T.RandomRotation(30),
             T.ToTensor(),
             T.Normalize(mean=DATA_CFG["mean"], std=DATA_CFG["std"])
         ])
