@@ -14,7 +14,7 @@ from dataset import SportsDataset, build_transforms
 from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
 def inference(params_path, topk=(1,5)):
-    model_name = param_path.split("_")[0]
+    model_name = params_path.split("_")[0]
     # Setup
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
