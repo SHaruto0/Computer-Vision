@@ -45,6 +45,7 @@ class CIFAR100(Dataset):
         self.data_dir = self.root / split
         self.data_path = []
         self.class_to_idx = {class_dir.name: idx for idx, class_dir in enumerate(self.data_dir.iterdir()) if class_dir.is_dir()}
+        self.idx_to_class = {idx: class_name for class_name, idx in self.class_to_idx.items()}
 
         for class_dir in self.data_dir.iterdir():
             if class_dir.is_dir():
