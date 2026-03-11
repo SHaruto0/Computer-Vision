@@ -117,9 +117,9 @@ outputs/
 
 <div align="center">
 
-| Confusion Plot                                                        | Sample Confused Images                                                               |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| ![WRN28_10 Confusion](outputs/plots/wrn28_10_most_confused_pairs.png) | ![WRN28_10 Confused Samples](outputs/plots/wrn28_10_most_confused_pairs_samples.png) |
+| Loss                                               | Accuracy                                                   | Epoch Time                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
+| ![WRN 28-10 Loss](outputs/plots/wrn28_10_loss.png) | ![WRN 28-10 Accuracy](outputs/plots/wrn28_10_accuracy.png) | ![WRN 28-10 Epoch Time](outputs/plots/wrn28_10_epoch_time.png) |
 
 <img src="outputs/plots/wrn28_10_most_confused_pairs_samples.png" width="400px">
 
