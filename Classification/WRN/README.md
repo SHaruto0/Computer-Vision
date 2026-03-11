@@ -1,8 +1,8 @@
 # Wide ResNet (WRN-28-10) Implemented from Scratch
 
-This project implements and trains a Wide ResNet (WRN-28-10) from scratch in PyTorch for image classification on a tree and object dataset.
+This project implements and trains **Wide ResNet (WRN-28-10)** from scratch in PyTorch for image classification.
 
-The architecture uses wide residual blocks to improve feature learning and follows the original WRN design.
+The architecture follows the Wide Residual Network design, which increases the width of residual blocks instead of simply increasing depth.
 
 ---
 
@@ -10,6 +10,7 @@ The architecture uses wide residual blocks to improve feature learning and follo
 
 https://www.kaggle.com/datasets/melikechan/cifar100
 
+CIFAR-100
 ```
 data/cifar100/
 ├── train/
@@ -134,6 +135,10 @@ outputs/
 - **Training Efficiency:** Average epoch time 3m 43s; total training time 8h 41m 54s.
 - **Potential Improvements:** Data augmentation, label smoothing, and learning rate tuning could further improve performance.
 
+## Future Task
+
+- Train ResNet with CIFAR100
+ 
 ---
 
 ## Running
@@ -158,7 +163,7 @@ python train.py
 python inference.py
 ```
 
-- Make sure to set the correct checkpoint file (e.g., `wrn28_10_epoch_70.pth`).
+- Make sure to set the correct checkpoint file (e.g., `wrn28_10_epoch_140.pth`).
 
 ### Kaggle Notebook
 
