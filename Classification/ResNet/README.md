@@ -267,5 +267,5 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
-- Create a dataset named `resnet` with the two yaml files. Or simply upload it if on Colab.
+- Create a dataset named `resnet` with the two config yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `ResNet` and upload the corresponding model checkpoint parameters.
