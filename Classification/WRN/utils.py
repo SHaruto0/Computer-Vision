@@ -95,4 +95,5 @@ def summarize_checkpoint_times(ckpt_path):
     return avg_time, total_time
 
 WRN_CFG = load_yaml("configs/wrn.yaml")
+RESNET_CFG = load_yaml("configs/resnet.yaml")
 DATA_CFG = load_yaml("configs/data.yaml")

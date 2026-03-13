@@ -9,15 +9,16 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from models.wrn import WRN28_10
+from models.resnet import ResNet50
 from dataset import CIFAR100, build_transforms
-from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, WRN_CFG
+from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, WRN_CFG, RESNET_CFG
 
 def train(model_name):
     """
-    Train a Wide Residual Network model on the sports dataset.
+    Train a Wide Residual Network or ResNet model on the CIFAR-100 dataset.
 
     Args:
-        model_name (str): One of "wrn28_10"
+        model_name (str): One of "wrn28_10", "resnet50"
     """
     # Config
     set_seed(42)
@@ -49,23 +50,27 @@ def train(model_name):
     # Model, loss, optimizer
     if model_name == "wrn28_10":
         model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100), withDropout=True).to(device)
-   
+        MODEL_CFG = WRN_CFG
+    elif model_name == "resnet50":
+        model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
+    
     criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
     optimizer = optim.SGD(
         model.parameters(),
-        lr=float(WRN_CFG.get("lr", 0.001)),
-        momentum=float(WRN_CFG.get("momentum", 0.9)),
-        weight_decay=float(WRN_CFG.get("weight_decay", 1e-4)),
+        lr=float(MODEL_CFG.get("lr", 0.001)),
+        momentum=float(MODEL_CFG.get("momentum", 0.9)),
+        weight_decay=float(MODEL_CFG.get("weight_decay", 1e-4)),
         nesterov=True
     )
     scheduler = optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=int(WRN_CFG.get("step_size", 30)),
-        gamma=float(WRN_CFG.get("gamma", 0.1)),
+        step_size=int(MODEL_CFG.get("step_size", 30)),
+        gamma=float(MODEL_CFG.get("gamma", 0.1)),
     )
 
     # Checkpoint
-    num_epochs = WRN_CFG.get("epochs", 50)
+    num_epochs = MODEL_CFG.get("epochs", 50)
     output_dir = BASE_PATH / Path("outputs/checkpoints")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -77,8 +82,8 @@ def train(model_name):
     test_acc_history = []
     epoch_times = []
 
-    if WRN_CFG.get("start_from", None) is not None and not isinstance(WRN_CFG.get("start_from", None), str):
-        ckpt_epoch = int(WRN_CFG["start_from"])
+    if MODEL_CFG.get("start_from", None) is not None and not isinstance(MODEL_CFG.get("start_from", None), str):
+        ckpt_epoch = int(MODEL_CFG["start_from"])
         ckpt_path = output_dir / f"{model_name}_epoch_{ckpt_epoch}.pth"
 
         checkpoint = torch.load(ckpt_path, map_location=device)
