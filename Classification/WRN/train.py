@@ -9,7 +9,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from models.wrn import WRN28_10
-from models.resnet import ResNet50
+from models.resnet import ResNet50, ResNet101, ResNet152
 from dataset import CIFAR100, build_transforms
 from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, WRN_CFG, RESNET_CFG
 
@@ -53,6 +53,12 @@ def train(model_name):
         MODEL_CFG = WRN_CFG
     elif model_name == "resnet50":
         model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
+    elif model_name == "resnet101":
+        model = ResNet101(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
+    elif model_name == "resnet152":
+        model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
         MODEL_CFG = RESNET_CFG
     
     criterion = nn.CrossEntropyLoss(label_smoothing=0.1)

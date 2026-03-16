@@ -10,6 +10,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 from models.wrn import WRN28_10
+from models.resnet import ResNet50, ResNet101, ResNet152
 from dataset import CIFAR100, build_transforms
 from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
@@ -42,7 +43,13 @@ def inference(params_path, topk=(1,5)):
 
     # Model, loss, optimizer
     if model_name == "wrn28_10":
-        model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100), withDropout=False).to(device)
+        model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100), withDropout=True).to(device)
+    elif "resnet50" in model_name:
+        model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif "resnet101" in model_name:
+        model = ResNet101(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif "resnet152" in model_name:
+        model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
    
     ckpt_path = BASE_PATH / "outputs" / "checkpoints" / params_path
     checkpoint = torch.load(ckpt_path, map_location=device)
