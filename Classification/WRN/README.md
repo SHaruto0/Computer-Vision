@@ -116,13 +116,50 @@ outputs/
 
 ### Plots
 
+#### Wide Residual Network (28, 10)
 <div align="center">
 
 | Loss                                               | Accuracy                                                   | Epoch Time                                                     |
 | -------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
-| ![WRN 28-10 Loss](outputs/plots/wrn28_10_loss.png) | ![WRN 28-10 Accuracy](outputs/plots/wrn28_10_accuracy.png) | ![WRN 28-10 Epoch Time](outputs/plots/wrn28_10_epoch_time.png) |
+| ![WRN 28-10 Loss](outputs/plots/wrn/wrn28_10_loss.png) | ![WRN 28-10 Accuracy](outputs/plots/wrn/wrn28_10_accuracy.png) | ![WRN 28-10 Epoch Time](outputs/plots/wrn/wrn28_10_epoch_time.png) |
 
-<img src="outputs/plots/wrn28_10_most_confused_pairs_samples.png" width="400px">
+<img src="outputs/plots/wrn/wrn28_10_most_confused_pairs_samples.png" width="400px">
+
+</div>
+
+
+#### ResNet50
+<div align="center">
+
+| Loss | Accuracy | Epoch Time |
+| ---- | -------- | ---------- |
+| ![ResNet50 Loss](outputs/plots/resnet50/resnet50_loss.png) | ![ResNet50 Accuracy](outputs/plots/resnet50/resnet50_accuracy.png) | ![ResNet50 Epoch Time](outputs/plots/resnet50/resnet50_epoch_time.png) |
+
+<img src="outputs/plots/resnet50/resnet50_most_confused_pairs_samples.png" width="400px">
+
+</div>
+
+
+#### ResNet101
+<div align="center">
+
+| Loss | Accuracy | Epoch Time |
+| ---- | -------- | ---------- |
+| ![ResNet101 Loss](outputs/plots/resnet101/resnet101_loss.png) | ![ResNet101 Accuracy](outputs/plots/resnet101/resnet101_accuracy.png) | ![ResNet101 Epoch Time](outputs/plots/resnet101/resnet101_epoch_time.png) |
+
+<img src="outputs/plots/resnet101/resnet101_most_confused_pairs_samples.png" width="400px">
+
+</div>
+
+
+#### ResNet152
+<div align="center">
+
+| Loss | Accuracy | Epoch Time |
+| ---- | -------- | ---------- |
+| ![ResNet152 Loss](outputs/plots/resnet152/resnet152_loss.png) | ![ResNet152 Accuracy](outputs/plots/resnet152/resnet152_accuracy.png) | ![ResNet152 Epoch Time](outputs/plots/resnet152/resnet152_epoch_time.png) |
+
+<img src="outputs/plots/resnet152/resnet152_most_confused_pairs_samples.png" width="400px">
 
 </div>
 
