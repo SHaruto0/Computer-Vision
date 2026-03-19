@@ -1,8 +1,10 @@
 # Wide ResNet (WRN-28-10) Implemented from Scratch
 
-This project implements and trains **Wide ResNet (WRN-28-10)** from scratch in PyTorch for image classification.
+This project implements and trains **Wide ResNet (WRN-28-10)** from scratch in PyTorch for image classification on CIFAR-100.
 
-The architecture follows the Wide Residual Network design, which increases the width of residual blocks instead of simply increasing depth.
+The architecture follows the Wide Residual Network design, which improves performance by increasing the **width of residual blocks** rather than simply going deeper.
+
+In addition, we include a comparative study with **ResNet variants (ResNet-50, ResNet-101, ResNet-152)** to analyze the trade-offs between **width and depth**, focusing on accuracy, training efficiency, and computational cost.
 
 ---
 
