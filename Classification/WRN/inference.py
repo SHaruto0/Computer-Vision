@@ -45,10 +45,13 @@ def inference(params_path, topk=(1,5)):
     if model_name == "wrn28_10":
         model = WRN28_10(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100), withDropout=True).to(device)
     elif "resnet50" in model_name:
+        model_name = params_path.split("_")[0]
         model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
     elif "resnet101" in model_name:
+        model_name = params_path.split("_")[0]
         model = ResNet101(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
     elif "resnet152" in model_name:
+        model_name = params_path.split("_")[0]
         model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
    
     ckpt_path = BASE_PATH / "outputs" / "checkpoints" / params_path
