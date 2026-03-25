@@ -1,0 +1,14 @@
+input_size: 448
+epochs: 135
+start_from: None
+
+lr: 0.001
+momentum: 0.9
+weight_decay: 5e-4
+step_size: 30
+gamma: 0.2
+
+S: 7                   # grid size
+B: 2                   # boxes per cell
+lambda_coord: 5.0
+lambda_noobj: 0.5
