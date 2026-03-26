@@ -1,0 +1,10 @@
+root: data/butterfly
+image_size: 224
+
+mean: [0.4800, 0.4654, 0.3365]
+std: [0.2728, 0.2632, 0.2712]
+
+batch_size: 64
+num_workers: 4
+
+num_classes: 100
