@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-class block(nn.Module):
+class wrn_block(nn.Module):
     def __init__(self, in_channels, out_channels, k, identity_downsample=None, stride=1, withDropout=False):
-        super(block, self).__init__()
+        super(wrn_block, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, out_channels*k, kernel_size=3, stride=stride, padding=1)
         self.bn1 = nn.BatchNorm2d(out_channels*k)
         self.dropout = nn.Dropout(p=0.3)
@@ -36,7 +36,7 @@ class block(nn.Module):
         return x
     
 class WRN(nn.Module):
-    def __init__(self, block, k, N, image_channels, num_classes, withDropout):
+    def __init__(self, wrn_block, k, N, image_channels, num_classes, withDropout):
         super(WRN, self).__init__()
         self.in_channels = 16
         self.conv1 = nn.Conv2d(image_channels, 16, kernel_size=3, stride=1, padding=1)
@@ -47,9 +47,9 @@ class WRN(nn.Module):
         n = (N - 4) // 6
 
         # WRN Layers
-        self.layer1 = self._make_layer(block, k, n, out_channels=16, stride=1, withDropout=withDropout)
-        self.layer2 = self._make_layer(block, k, n, out_channels=32, stride=2, withDropout=withDropout)
-        self.layer3 = self._make_layer(block, k, n, out_channels=64, stride=2, withDropout=withDropout)
+        self.layer1 = self._make_layer(wrn_block, k, n, out_channels=16, stride=1, withDropout=withDropout)
+        self.layer2 = self._make_layer(wrn_block, k, n, out_channels=32, stride=2, withDropout=withDropout)
+        self.layer3 = self._make_layer(wrn_block, k, n, out_channels=64, stride=2, withDropout=withDropout)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1,1))
         self.fc = nn.Linear(64*k, num_classes)
@@ -69,7 +69,7 @@ class WRN(nn.Module):
 
         return x
 
-    def _make_layer(self, block, k, n, out_channels, stride, withDropout):
+    def _make_layer(self, wrn_block, k, n, out_channels, stride, withDropout):
         identity_downsample = None
         layers = []
 
@@ -78,16 +78,16 @@ class WRN(nn.Module):
                                                           stride=stride),
                                                 nn.BatchNorm2d(out_channels*k))
         
-        layers.append(block(self.in_channels, out_channels, k, identity_downsample, stride, withDropout))
+        layers.append(wrn_block(self.in_channels, out_channels, k, identity_downsample, stride, withDropout))
         self.in_channels = out_channels * k
 
         for i in range(n - 1):
-            layers.append(block(self.in_channels, out_channels, k, withDropout=withDropout))
+            layers.append(wrn_block(self.in_channels, out_channels, k, withDropout=withDropout))
         
         return nn.Sequential(*layers)
     
 def WRN28_10(img_channels=3, num_classes=100, withDropout=False):
-    return WRN(block, 10, 28, img_channels, num_classes, withDropout)
+    return WRN(wrn_block, 10, 28, img_channels, num_classes, withDropout)
     
 
 def test():

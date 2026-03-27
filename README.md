@@ -24,3 +24,8 @@ This repository tracks my progress as I experiment with different computer visio
 - Depth estimation
 - Object tracking
 - Optical flow
+
+## Potential Datasets
+
+- Welding Defect - Object Detection (https://www.kaggle.com/datasets/sukmaadhiwijaya/welding-defect-object-detection)
+- Waymo (https://waymo.com/open/about/)
