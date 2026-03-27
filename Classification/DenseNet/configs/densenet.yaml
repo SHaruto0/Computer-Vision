@@ -1,4 +1,4 @@
-input_size: 224
+input_size: 100
 epochs: 100
 start_from: None
 

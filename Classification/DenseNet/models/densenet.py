@@ -62,11 +62,11 @@ class DenseNet(nn.Module):
         super(DenseNet, self).__init__()
         self.features = []
         self.features.append(
-            nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            nn.Conv2d(image_channels, 64, kernel_size=3, stride=1, padding=1, bias=False)
         )
         self.features.append(nn.BatchNorm2d(64))
         self.features.append(nn.ReLU(inplace=True))
-        self.features.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
+        # self.features.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
 
         num_channels = 64
         for i, num_layers in enumerate(layers):
@@ -104,7 +104,7 @@ def DenseNet264(img_channels, num_classes):
 
 def test():
     model = DenseNet121(img_channels=3, num_classes=100)
-    x = torch.randn(2, 3, 448, 448)
+    x = torch.randn(2, 3, 100, 100)
     out = model(x)
     print(out.shape)
 
