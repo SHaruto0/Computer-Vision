@@ -1,5 +1,5 @@
 root: data/fruit
-image_size: 100
+image_size: 224
 
 mean: [0.6434, 0.5508, 0.4839]
 std: [0.3289, 0.3746, 0.4001]
