@@ -1,5 +1,5 @@
-input_size: 100
-epochs: 100
+input_size: 224
+epochs: 50
 start_from: None
 
 lr: 0.01

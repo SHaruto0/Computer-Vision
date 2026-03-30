@@ -1,4 +1,4 @@
-root: data/fruit
+root: data/butterfly
 image_size: 224
 
 mean: [0.6434, 0.5508, 0.4839]
