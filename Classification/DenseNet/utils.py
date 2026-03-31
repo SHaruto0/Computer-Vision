@@ -73,3 +73,4 @@ def save_training_plots(
 
 DATA_CFG = load_yaml("configs/data.yaml")
 DENSENET_CFG = load_yaml("configs/densenet.yaml")
+RESNET_CFG = load_yaml("configs/resnet.yaml")

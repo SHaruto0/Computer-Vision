@@ -9,8 +9,9 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from dataset import ButterflyDataset, build_transforms
+from models.resnet import ResNet50, ResNet101, ResNet152
 from models.densenet import DenseNet121, DenseNet169, DenseNet201
-from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, DENSENET_CFG
+from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, DENSENET_CFG, RESNET_CFG
 
 def train(model_name):
     """
@@ -48,26 +49,38 @@ def train(model_name):
     # Model, loss, optimizer
     if model_name == "densenet121":
         model = DenseNet121(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = DENSENET_CFG
     elif model_name == "densenet169":
         model = DenseNet169(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = DENSENET_CFG
     elif model_name == "densenet201":
         model = DenseNet201(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = DENSENET_CFG
+    elif model_name == "resnet50":
+        model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
+    elif model_name == "resnet101":
+        model = ResNet101(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
+    elif model_name == "resnet152":
+        model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = RESNET_CFG
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),
-        lr=float(DENSENET_CFG.get("lr", 0.001)),
-        momentum=float(DENSENET_CFG.get("momentum", 0.9)),
-        weight_decay=float(DENSENET_CFG.get("weight_decay", 1e-4))
+        lr=float(MODEL_CFG.get("lr", 0.001)),
+        momentum=float(MODEL_CFG.get("momentum", 0.9)),
+        weight_decay=float(MODEL_CFG.get("weight_decay", 1e-4))
     )
     scheduler = optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=int(DENSENET_CFG.get("lr_step_size", 7)),
-        gamma=float(DENSENET_CFG.get("lr_gamma", 0.1))
+        step_size=int(MODEL_CFG.get("lr_step_size", 7)),
+        gamma=float(MODEL_CFG.get("lr_gamma", 0.1))
     )
 
     # Checkpoint
-    num_epochs = int(DENSENET_CFG.get("epochs", 50))
+    num_epochs = int(MODEL_CFG.get("epochs", 50))
     output_dir = BASE_PATH / Path("outputs/checkpoints")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -79,8 +92,8 @@ def train(model_name):
     test_acc_history = []
     epoch_times = []
 
-    if DENSENET_CFG.get("start_from", None) is not None and not isinstance(DENSENET_CFG.get("start_from", None), str):
-        ckpt_epoch = int(DENSENET_CFG["start_from"])
+    if MODEL_CFG.get("start_from", None) is not None and not isinstance(MODEL_CFG.get("start_from", None), str):
+        ckpt_epoch = int(MODEL_CFG["start_from"])
         ckpt_path = output_dir / f"{model_name}_epoch_{ckpt_epoch}.pth"
 
         checkpoint = torch.load(ckpt_path, map_location=device)
