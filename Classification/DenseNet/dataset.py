@@ -50,6 +50,7 @@ class ButterflyDataset(Dataset):
         data = self.df[self.df["data set"] == split]
         _unique_id_and_classes = data[["class id", "labels"]].drop_duplicates().reset_index(drop=True)
         self.class_to_idx = {cls_name: id for id, cls_name in _unique_id_and_classes.itertuples(index=False)}
+        self.idx_to_class = {id: cls_name for cls_name, id in self.class_to_idx.items()}
 
         self.samples = []
         for _, row in data.iterrows():

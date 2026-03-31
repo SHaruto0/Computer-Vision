@@ -66,6 +66,10 @@ def train(model_name):
         model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
         MODEL_CFG = RESNET_CFG
 
+    if torch.cuda.device_count() > 1:
+        print(f"Using {torch.cuda.device_count()} GPUs!")
+        model = nn.DataParallel(model)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         model.parameters(),

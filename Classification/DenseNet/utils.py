@@ -71,6 +71,29 @@ def save_training_plots(
 
     print(f"\nPlots saved to: {output_dir.resolve()}")
 
+def summarize_checkpoint_times(ckpt_path):
+    ckpt = torch.load(BASE_PATH / Path("outputs/checkpoints/") / ckpt_path, map_location="cpu")
+    
+    # Check if epoch_times exists
+    if "epoch_times" not in ckpt:
+        print("Checkpoint does not contain 'epoch_times'.")
+        return None
+
+    epoch_times = ckpt["epoch_times"]
+    total_time = sum(epoch_times)
+    avg_time = total_time / len(epoch_times)
+
+    def format_hms(seconds):
+        h = int(seconds // 3600)
+        m = int((seconds % 3600) // 60)
+        s = int(seconds % 60)
+        return f"{h}h {m}m {s}s"
+
+    print(f"Average epoch time: {format_hms(avg_time)}")
+    print(f"Total training time: {format_hms(total_time)}")
+    
+    return avg_time, total_time
+
 DATA_CFG = load_yaml("configs/data.yaml")
 DENSENET_CFG = load_yaml("configs/densenet.yaml")
 RESNET_CFG = load_yaml("configs/resnet.yaml")
