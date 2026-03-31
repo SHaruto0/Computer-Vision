@@ -8,7 +8,7 @@ This project implements and trains a VGG16-style CNN in PyTorch for image classi
 
 https://www.kaggle.com/datasets/dimensi0n/imagenet-256
 
-Download and preprocess the data on your computer by running `dataset.py`
+Download and preprocess the data on your computer by running `dataset.py` or set DOWNLOAD flag to True in kaggle notebook and download the data.
 
 - ImageNet-style folder structure:
 
@@ -127,6 +127,6 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
-- Create a dataset called `imagenet` and upload the processed train/test data created from `dataset.py`.
+- Create a dataset called `imagenet` and upload the processed train/test data created from `dataset.py` or in kaggle notebook.
 - Create a dataset named `VGG16 Config` with the two config yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `VGG16` and upload the corresponding model checkpoint parameters.
