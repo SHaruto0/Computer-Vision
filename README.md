@@ -82,3 +82,13 @@ This repository tracks my progress as I experiment with different computer visio
     - Project Idea: A "Universal Quality Inspector." Train a model only on "perfect" circuit boards. When a board with a tiny scratch or missing solder point passes by, the model flags it as an anomaly.
     - Tech Stack: PatchCore or Anomalib (Intel's library) + PyTorch + Gradio (for the UI).
     - Dataset: MVTec AD is the industry gold standard here.
+- Vision-Language-Action (VLA) for Robotic Manipulation
+    - Project Idea: Build a "Text-to-Robot" task executor. A user types "Pick up the red mug and place it near the laptop," and the model translates the camera feed and text directly into joint velocities for a robotic arm.
+    - Tech Stack: RT-2 (Robotic Transformer) architecture + PyTorch + NVIDIA Isaac Sim (for simulation).
+    - Dataset: Open X-Embodiment (the "ImageNet" of robotics).
+    - Skills Earned: Vision Transformers (ViT), action tokenization, and cross-modal fusion
+- Explainable AI (XAI) for Medical Diagnosis
+    - Project Idea: Build an X-ray classifier that provides a "Saliency Map" and a natural language explanation (e.g., "Flagged due to abnormal density in the upper left lobe and irregular borders").
+    - Tech Stack: Grad-CAM (Visual explanations) + SHAP + Llama 3-Vision (for generating the text explanation).
+    - Dataset: ChestX-ray14 or MIMIC-CXR.
+    - Skills Earned: Model interpretability, visual-language grounding, and clinical validation.
