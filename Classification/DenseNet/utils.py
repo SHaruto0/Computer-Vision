@@ -94,7 +94,7 @@ def summarize_checkpoint_times(ckpt_path):
     
     return avg_time, total_time
 
-def print_model_size(model: nn.Module, device, input_size=(3, 224, 224)):
+def print_model_size(model, device, input_size=(3, 224, 224)):
     """
     Prints the number of parameters and approximate memory size of a PyTorch model.
 
