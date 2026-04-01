@@ -6,7 +6,13 @@ All architectures use Bottleneck residual blocks and follow the original ResNet 
 
 ---
 
+## Hardware
+
+- GPU: P100 (Kaggle Notebook)
+
 ## Dataset
+
+Sports
 
 https://www.kaggle.com/datasets/gpiosenka/sports-classification
 
@@ -45,8 +51,6 @@ All models are implemented **from scratch** using:
 - Global Average Pooling
 - Fully connected classifier → `num_classes`
 
----
-
 ### Depth Variants
 
 | Model      | Layers per Stage | Total Layers |
@@ -63,8 +67,6 @@ All models are implemented **from scratch** using:
 - Loss: CrossEntropy
 - Epochs: 100
 - Supports checkpoint resume (`start_from` parameter in `resnet.yaml`)
-
----
 
 ## Results
 
@@ -93,8 +95,6 @@ All models are implemented **from scratch** using:
 - Average epoch time: 0h 1m 19s
 - Total training time: 2h 14m 1s
 
----
-
 ### ResNet-101
 
 **Accuracy:**
@@ -119,8 +119,6 @@ All models are implemented **from scratch** using:
 
 - Average epoch time: 0h 2m 2s
 - Total training time: 3h 26m 28s
-
----
 
 ### ResNet-152
 
@@ -160,8 +158,6 @@ Each model reports:
 - Loss plot
 - Accuracy plot
 - Epoch time plot
-
----
 
 ### Saved files:
 
@@ -215,8 +211,6 @@ The two images on the left form one pair, and the two images on the right form a
 <img src="outputs/plots/resnet152_most_confused_pairs_samples.png" width="400px">
 
 </div>
-
----
 
 ## Analysis
 

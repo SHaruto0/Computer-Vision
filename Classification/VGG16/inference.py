@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from models.vgg16 import VGG16
 from dataset import ImageNetDataset, build_transforms
-from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
+from utils import save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
 def inference(params_path, topk=(1,5)):
     # Setup
@@ -185,6 +185,16 @@ def inference(params_path, topk=(1,5)):
 
     print(f"\nPer-class accuracy CSV saved to: {csv_path}")
 
+    # Save plots
+    save_training_plots(
+        loss_history=checkpoint.get("loss_history", []),
+        train_acc_history=checkpoint.get("train_acc_history", []),
+        test_acc_history=checkpoint.get("test_acc_history", []),
+        epoch_times=checkpoint.get("epoch_times", []),
+        output_dir="outputs/plots"
+    )
+
+    print("\nPlots saved")
 
 if __name__ == "__main__":
     param_path = "vgg16_epoch_100.pth"
