@@ -22,7 +22,7 @@ def inference(params_path, topk=(1,5)):
     print("Using device:", device)
 
     # Create output directory for plots
-    plots_dir = BASE_PATH / "outputs" / "plots"
+    plots_dir = BASE_PATH / "outputs" / "plots" / model_name
     plots_dir.mkdir(parents=True, exist_ok=True)
 
     # Create output directory for metrics
@@ -194,7 +194,7 @@ def inference(params_path, topk=(1,5)):
         train_acc_history=checkpoint.get("train_acc_history", []),
         test_acc_history=checkpoint.get("test_acc_history", []),
         epoch_times=checkpoint.get("epoch_times", []),
-        output_dir="outputs/plots"
+        output_dir=plots_dir
     )
 
     print("\nPlots saved")
