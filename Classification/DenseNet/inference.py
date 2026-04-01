@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from models.resnet import ResNet50, ResNet101, ResNet152
 from models.densenet import DenseNet121, DenseNet169, DenseNet201
 from dataset import ButterflyDataset, build_transforms
-from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
+from utils import print_model_size, save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
 def inference(params_path, topk=(1,5)):
     model_name = "_".join(params_path.split("_")[:2])
@@ -22,7 +22,7 @@ def inference(params_path, topk=(1,5)):
     print("Using device:", device)
 
     # Create output directory for plots
-    plots_dir = BASE_PATH / "outputs" / "plots"
+    plots_dir = BASE_PATH / "outputs" / "plots" / model_name
     plots_dir.mkdir(parents=True, exist_ok=True)
 
     # Create output directory for metrics
@@ -67,6 +67,8 @@ def inference(params_path, topk=(1,5)):
     model.load_state_dict(new_state_dict)
     model.eval()
 
+    print_model_size(model, device)
+
     # Metrics Tracking
     total = 0
     topk_correct = [0] * len(topk)
@@ -108,6 +110,9 @@ def inference(params_path, topk=(1,5)):
         acc = topk_correct[i] / total
         print(f"Top-{k}: {acc:.4f}")
 
+    print(f"Highest test accuracy: {max(checkpoint.get('test_acc_history', [0])):.4f}")
+    print(f"at epoch: {checkpoint.get('test_acc_history', []).index(max(checkpoint.get('test_acc_history', [0])))}")
+    
     # Confusion analysis
     most_confused = confusion_counter.most_common(10)
 
@@ -194,6 +199,18 @@ def inference(params_path, topk=(1,5)):
             writer.writerow([cls, name, f"{acc:.4f}", correct, total_cls])
 
     print(f"\nPer-class accuracy CSV saved to: {csv_path}")
+
+    # Save plots
+    save_training_plots(
+        model_name=model_name,
+        loss_history=checkpoint.get("loss_history", []),
+        train_acc_history=checkpoint.get("train_acc_history", []),
+        test_acc_history=checkpoint.get("test_acc_history", []),
+        epoch_times=checkpoint.get("epoch_times", []),
+        output_dir=plots_dir
+    )
+
+    print("\nPlots saved")
 
 if __name__ == "__main__":
     param_path = "densenet121_epoch_50.pth"

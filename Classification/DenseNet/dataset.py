@@ -3,9 +3,11 @@ import kagglehub
 import pandas as pd
 from PIL import Image
 from pathlib import Path
+from tqdm.asyncio import tqdm
 
+import torch
 import torchvision.transforms as T
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader, Dataset
 
 from utils import BASE_PATH, DATA_CFG
 
@@ -22,6 +24,36 @@ def download_data(data_dir):
         shutil.move(content_path, data_dir)
     print("Moving complete!")
     return data_dir
+
+def calculate_mean_std():
+    transform = T.Compose([
+        T.ToTensor()
+    ])
+    
+    train_datasets = ButterflyDataset(
+            root=DATA_CFG["root"], 
+            split="train",
+            transform=transform)
+    
+    loader = DataLoader(train_datasets, batch_size=64, shuffle=False)
+    
+    mean = torch.zeros(3)
+    std = torch.zeros(3)
+    total_pixels = 0
+    
+    for images, _ in tqdm(loader):
+        b, c, h, w = images.shape
+        num_pixels = b * h * w
+    
+        mean += images.sum(dim=[0, 2, 3])
+        std += (images ** 2).sum(dim=[0, 2, 3])
+        total_pixels += num_pixels
+    
+    mean /= total_pixels
+    std = torch.sqrt(std / total_pixels - mean ** 2)
+    
+    print("Mean:", mean)
+    print("Std:", std)
 
 def build_transforms(image_size=224, train=True):
     if train:

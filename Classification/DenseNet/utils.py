@@ -40,7 +40,7 @@ def save_training_plots(
     plt.plot(epochs, loss_history, label="Train Loss")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    plt.title("Training Loss")
+    plt.title(f"Training Loss - {model_name}")
     plt.legend()
     plt.grid(True)
     plt.savefig(output_dir / f"{model_name}_loss.png")
@@ -52,7 +52,7 @@ def save_training_plots(
     plt.plot(epochs, test_acc_history, label="Test Accuracy")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    plt.title("Train vs Test Accuracy")
+    plt.title(f"Train vs Test Accuracy - {model_name}")
     plt.legend()
     plt.grid(True)
     plt.savefig(output_dir / f"{model_name}_accuracy.png")
@@ -63,7 +63,7 @@ def save_training_plots(
     plt.plot(epochs, epoch_times, label="Time per Epoch (s)")
     plt.xlabel("Epoch")
     plt.ylabel("Seconds")
-    plt.title("Epoch Time")
+    plt.title(f"Epoch Time - {model_name}")
     plt.legend()
     plt.grid(True)
     plt.savefig(output_dir / f"{model_name}_epoch_time.png")
@@ -93,6 +93,43 @@ def summarize_checkpoint_times(ckpt_path):
     print(f"Total training time: {format_hms(total_time)}")
     
     return avg_time, total_time
+
+def print_model_size(model: nn.Module, device, input_size=(3, 224, 224)):
+    """
+    Prints the number of parameters and approximate memory size of a PyTorch model.
+
+    Args:
+        model (nn.Module): The model to inspect.
+        input_size (tuple): Input size (C, H, W), default is (3, 224, 224).
+    """
+    # Total parameters
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    # Estimate model size (bytes)
+    # float32 = 4 bytes
+    size_bytes = total_params * 4
+    size_mb = size_bytes / (1024 ** 2)
+
+    print(f"Model: {model.__class__.__name__}")
+    print(f"Total parameters: {total_params:,}")
+    print(f"Trainable parameters: {trainable_params:,}")
+    print(f"Approximate size: {size_mb:.2f} MB")
+
+    # Measure memory usage
+    if device.type == 'cuda':
+        torch.cuda.reset_peak_memory_stats(device)
+    
+    dummy_input = torch.randn(1, *input_size).to(device)
+    model.eval()
+    with torch.no_grad():
+        _ = model(dummy_input)
+
+    if device.type == 'cuda':
+        mem_alloc = torch.cuda.memory_allocated(device) / (1024 ** 2)
+        mem_peak = torch.cuda.max_memory_allocated(device) / (1024 ** 2)
+        print(f"GPU Memory Allocated: {mem_alloc:.2f} MB")
+        print(f"GPU Peak Memory Allocated: {mem_peak:.2f} MB")
 
 DATA_CFG = load_yaml("configs/data.yaml")
 DENSENET_CFG = load_yaml("configs/densenet.yaml")
