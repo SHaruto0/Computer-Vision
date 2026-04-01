@@ -183,8 +183,6 @@ Each model reports:
 ### Saved files:
 
 ```
-### Saved files:
-
 outputs/
 ├── plots/
 │   ├── wrn/
@@ -331,5 +329,6 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
+- Insert your username for model and config path!
 - Create a dataset named `wide resnet` with the three yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `wrn` and upload the corresponding model checkpoint parameters.

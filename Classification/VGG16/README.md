@@ -125,6 +125,7 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
+- Insert your username for model and config path!
 - Create a dataset called `imagenet` and upload the processed train/test data created from `dataset.py` or in kaggle notebook.
 - Create a dataset named `VGG16 Config` with the two config yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `VGG16` and upload the corresponding model checkpoint parameters.
