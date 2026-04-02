@@ -2,11 +2,18 @@
 
 This repository tracks my progress as I experiment with different computer vision models for various tasks.
 
-## Completed
+## Completed (Chronological Order)
+- Image classification
+    - VGG16
+    - ResNet
+    - Wide ResNet
+    - DenseNet
 
 ## In Progress
 - Image classification
-
+    - Vision Transformer
+- Object detection
+    - YOLOv1
 
 ## To Learn
 - Object detection
