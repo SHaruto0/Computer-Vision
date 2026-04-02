@@ -1,6 +1,6 @@
-# DesnseNet (121 / 169 / 201) Implemented from Scratch
+# DesnseNet (121 / 169 / 201 / 264) Implemented from Scratch
 
-This project implements and trains the **DenseNet (Densely Connected Convolutional Network)** family—specifically **DenseNet-121, DenseNet-169, and DenseNet-201**—from scratch in PyTorch for fine-grained butterfly classification.
+This project implements and trains the **DenseNet (Densely Connected Convolutional Network)** family—specifically **DenseNet-121, DenseNet-169, DenseNet-201, and DenseNet-264** from scratch in PyTorch for fine-grained butterfly classification.
 
 The architecture follows the principle of **feature reuse**, where each layer receives the concatenated feature maps of all preceding layers within a dense block. This design significantly reduces the vanishing gradient problem and encourages the network to learn more compact and efficient representations.
 
@@ -54,6 +54,7 @@ data/butterfly/
 | DenseNet-121 | (6, 12, 24, 16) | 121 |
 | DenseNet-169 | (6, 12, 32, 32) | 169 |
 | DenseNet-201 | (6, 12, 48, 32) | 201 |
+| DenseNet-264 | (6, 12, 64, 48) | 264 |
 
 ## Training
 
@@ -157,6 +158,36 @@ data/butterfly/
 - Total training time: 2h 31m 47s  
 
 
+### DenseNet-264
+
+**Model Statistics:**
+- Total parameters: 30,917,604  
+- Trainable parameters: 30,917,604  
+- Approximate size: 117.94 MB  
+- GPU Memory Allocated: 484.56 MB  
+- GPU Peak Memory Allocated: 492.99 MB  
+
+**Accuracy:**
+- Top-1: 88.40%  
+- Top-5: 98.40%  
+- Highest test accuracy: 88.40% (epoch 30)
+
+**Top 10 most confused class pairs (true → predicted):**
+- COPPER TAIL → PURPLISH COPPER : 3  
+- BANDED TIGER MOTH → GARDEN TIGER MOTH : 2  
+- QUESTION MARK → EASTERN COMA : 2  
+- ATLAS MOTH → HERCULES MOTH : 1  
+- BANDED PEACOCK → ULYSES : 1  
+- BECKERS WHITE → LARGE MARBLE : 1  
+- BIRD CHERRY ERMINE MOTH → GIANT LEOPARD MOTH : 1  
+- BLUE MORPHO → ULYSES : 1  
+- BLUE SPOTTED CROW → GREAT EGGFLY : 1  
+- BLUE SPOTTED CROW → ARCIGERA FLOWER MOTH : 1  
+
+**Training Time:**
+- Average epoch time: 0h 3m 54s  
+- Total training time: 3h 15m 1s  
+
 ### ResNet-50
 
 **Model Statistics:**
@@ -248,17 +279,17 @@ data/butterfly/
 
 ## Model Comparison
 
-| Statistic / Model                  | DenseNet-121       | DenseNet-169       | DenseNet-201       | ResNet-50          | ResNet-101         | ResNet-152         |
-|-----------------------------------|------------------|------------------|------------------|------------------|------------------|------------------|
-| Total Parameters                   | 7,056,356        | 12,650,980       | 18,285,028       | 23,739,492       | 42,757,732       | 58,424,420       |
-| Trainable Parameters               | 7,056,356        | 12,650,980       | 18,285,028       | 23,739,492       | 42,757,732       | 58,424,420       |
-| Approximate Size (MB)              | 26.92            | 48.26            | 69.75            | 90.56            | 163.11           | 222.87           |
-| GPU Memory Allocated (MB)          | 317.35           | 382.91           | 447.12           | 511.77           | 730.36           | 910.55           |
-| GPU Peak Memory Allocated (MB)     | 326.42           | 391.31           | 456.87           | 539.10           | 757.70           | 937.89           |
-| Top-1 Accuracy (%)                  | 63.00            | 66.20            | 86.40            | 74.60            | 74.20            | 75.60            |
-| Top-5 Accuracy (%)                  | 87.20            | 87.60            | 98.40            | 90.00            | 90.60            | 91.60            |
-| Average Epoch Time                  | 0h 1m 57s        | 0h 2m 36s        | 0h 3m 2s         | 0h 1m 36s        | 0h 2m 38s        | 0h 3m 32s        |
-| Total Training Time                 | 1h 38m 4s        | 2h 10m 0s        | 2h 31m 47s       | 1h 20m 15s       | 2h 11m 50s       | 2h 57m 17s       |
+| Statistic / Model                  | DenseNet-121 | DenseNet-169 | DenseNet-201 | DenseNet-264 | ResNet-50 | ResNet-101 | ResNet-152 |
+|-----------------------------------|-------------|-------------|-------------|-------------|-----------|-----------|-----------|
+| Total Parameters                   | 7,056,356   | 12,650,980  | 18,285,028  | 30,917,604  | 23,739,492| 42,757,732| 58,424,420|
+| Trainable Parameters               | 7,056,356   | 12,650,980  | 18,285,028  | 30,917,604  | 23,739,492| 42,757,732| 58,424,420|
+| Approximate Size (MB)              | 26.92       | 48.26       | 69.75       | 117.94      | 90.56     | 163.11    | 222.87    |
+| GPU Memory Allocated (MB)          | 317.35      | 382.91      | 447.12      | 484.56      | 511.77    | 730.36    | 910.55    |
+| GPU Peak Memory (MB)               | 326.42      | 391.31      | 456.87      | 492.99      | 539.10    | 757.70    | 937.89    |
+| Top-1 Accuracy (%)                 | 63.00       | 66.20       | 86.40       | 88.40       | 74.60     | 74.20     | 75.60     |
+| Top-5 Accuracy (%)                 | 87.20       | 87.60       | 98.40       | 98.40       | 90.00     | 90.60     | 91.60     |
+| Average Epoch Time                 | 0h 1m 57s   | 0h 2m 36s   | 0h 3m 2s    | 0h 3m 54s   | 0h 1m 36s | 0h 2m 38s | 0h 3m 32s |
+| Total Training Time                | 1h 38m 4s   | 2h 10m 0s   | 2h 31m 47s  | 3h 15m 1s   | 1h 20m 15s| 2h 11m 50s| 2h 57m 17s|
 
 ## Inference & Outputs
 
@@ -287,6 +318,9 @@ outputs/
 │   │   └── ...
 │   ├── densenet201/
 │   │   ├── densenet201_loss.png
+│   │   └── ...
+│   ├── densenet264/
+│   │   ├── densenet264_loss.png
 │   │   └── ...
 │   ├── resnet50/
 │   │   ├── resnet50_loss.png
@@ -339,6 +373,17 @@ outputs/
 
 </div>
 
+#### DenseNet-264
+<div align="center">
+
+| Loss | Accuracy | Epoch Time |
+|------|----------|------------|
+| ![DenseNet-264 Loss](outputs/plots/densenet264/densenet264_loss.png) | ![DenseNet-264 Accuracy](outputs/plots/densenet264/densenet264_accuracy.png) | ![DenseNet-264 Epoch Time](outputs/plots/densenet264/densenet264_epoch_time.png) |
+
+<img src="outputs/plots/densenet264/densenet264_most_confused_pairs_samples.png" width="400px">
+
+</div>
+
 
 #### ResNet-50
 <div align="center">
@@ -380,97 +425,117 @@ outputs/
 ### Accuracy Comparison
 
 - **Top-1 Accuracy**:
-  - **DenseNet-201**: 86.4% → Clearly the most accurate model for fine-grained butterfly classification.
-  - **DenseNet-121/169**: 63% and 66% → Smaller models underfit, struggling to distinguish fine details.
-  - **ResNet-50/101/152**: 74–75.6% → Moderate accuracy but higher memory footprint.
+  - **DenseNet-264**: 88.4% → Best overall performance, highest accuracy across all models.
+  - **DenseNet-201**: 86.4% → Very strong, slightly below 264 but much more efficient.
+  - **ResNet-50/101/152**: 74–75.6% → Moderate accuracy despite significantly larger size.
+  - **DenseNet-121/169**: 63% and 66% → Underfitting, insufficient depth for fine-grained classification.
 
 - **Top-5 Accuracy**:
-  - **DenseNet-201** leads at 98.4%, showing strong class ranking even when the top prediction is wrong.
-  - ResNet family: 90–91.6% → still good, but DenseNet-201 captures subtle distinctions better.
+  - **DenseNet-201 / DenseNet-264**: 98.4% → Excellent ranking capability.
+  - **ResNet family**: 90–91.6% → Decent but weaker at distinguishing similar classes.
+  - **DenseNet-121/169**: ~87% → Lowest among all models.
 
-DenseNet-201 consistently outperforms others in both Top-1 and Top-5 accuracy, highlighting its strength for subtle visual differences.
-
----
+DenseNet-264 achieves the highest accuracy, but DenseNet-201 offers nearly identical Top-5 performance with better efficiency.
 
 ### Confusion Patterns
 
 - **DenseNet-121 & DenseNet-169**:
-  - Frequently confuse **SOOTYWING → BANDED PEACOCK** and other visually similar butterfly/moth species.
-  - Mistakes often involve **color patterns** or **wing shapes**, indicating shallow layers may not extract fine-grained features.
+  - Frequently confuse highly similar species:
+    - **SOOTYWING → BANDED PEACOCK**
+    - **BLUE MORPHO → ULYSES**
+  - Errors suggest difficulty capturing fine-grained textures and wing patterns.
 
 - **DenseNet-201**:
-  - Mistakes are rare and less severe: e.g., **COPPER TAIL → PURPLISH COPPER**, **EASTERN PINE ELFIN → TROPICAL LEAFWING**.
-  - Shows stronger differentiation for subtle species differences due to deeper and denser connections.
+  - Fewer and more subtle confusions:
+    - **COPPER TAIL → PURPLISH COPPER**
+    - **EASTERN PINE ELFIN → TROPICAL LEAFWING**
+  - Indicates strong feature reuse and deeper semantic understanding.
+
+- **DenseNet-264**:
+  - Further reduced confusion counts:
+    - Similar mistakes remain but occur less frequently (mostly count = 1–3).
+  - Demonstrates best **fine-grained discrimination**, especially for near-identical species.
 
 - **ResNet Family**:
-  - Common mistakes: **SOOTYWING → COMMON WOOD-NYMPH**, **BECKERS WHITE → LARGE MARBLE**.
-  - Errors are broader across multiple species, suggesting ResNet features are less discriminative for highly similar classes.
+  - Broader and more frequent confusions:
+    - **SOOTYWING → COMMON WOOD-NYMPH**
+    - **BECKERS WHITE → LARGE MARBLE**
+  - Errors spread across many categories → weaker specialization for subtle differences.
 
-DenseNet-201 not only achieves the highest accuracy but also reduces major confusion among visually similar classes, whereas smaller DenseNets and ResNets confuse easily.
-
----
+Overall, deeper DenseNets (201/264) significantly reduce both frequency and severity of misclassifications.
 
 ### Model Size and Parameter Efficiency
 
 | Model            | Parameters (M) | Size (MB) | Top-1 Accuracy (%) | Notes |
 |-----------------|----------------|-----------|------------------|-------|
-| DenseNet-121     | 7.06           | 26.92     | 63.0             | Very small, underfits, high confusion |
-| DenseNet-169     | 12.65          | 48.26     | 66.2             | Moderate, better than 121 |
-| DenseNet-201     | 18.29          | 69.75     | 86.4             | Best accuracy & efficiency |
-| ResNet-50        | 23.74          | 90.56     | 74.6             | Larger, slower, moderate confusion |
-| ResNet-101       | 42.76          | 163.11    | 74.2             | Bigger, marginal improvement over 50 |
-| ResNet-152       | 58.42          | 222.87    | 75.6             | Largest, slow, still worse than DenseNet-201 |
+| DenseNet-121     | 7.06           | 26.92     | 63.0             | Very small, underfits |
+| DenseNet-169     | 12.65          | 48.26     | 66.2             | Moderate improvement |
+| DenseNet-201     | 18.29          | 69.75     | 86.4             | Excellent efficiency |
+| DenseNet-264     | 30.92          | 117.94    | 88.4             | Best accuracy, higher cost |
+| ResNet-50        | 23.74          | 90.56     | 74.6             | Larger but less accurate |
+| ResNet-101       | 42.76          | 163.11    | 74.2             | Much larger, no real gain |
+| ResNet-152       | 58.42          | 222.87    | 75.6             | Largest, inefficient |
 
-DenseNets are more **parameter-efficient**. DenseNet-201 delivers top performance with ~1/3 the parameters of ResNet-152.
-
----
+- **DenseNet-201** = best accuracy per parameter
+- **DenseNet-264** = best absolute accuracy
+- ResNets are significantly less parameter-efficient
 
 ### GPU Memory Usage
 
 | Model            | GPU Allocated (MB) | GPU Peak (MB) | Notes |
 |-----------------|------------------|---------------|-------|
-| DenseNet-121     | 317.35           | 326.42        | Smallest memory usage |
+| DenseNet-121     | 317.35           | 326.42        | Lowest usage |
 | DenseNet-169     | 382.91           | 391.31        | Moderate |
-| DenseNet-201     | 447.12           | 456.87        | Efficient despite high accuracy |
-| ResNet-50        | 511.77           | 539.10        | Moderate memory cost |
-| ResNet-101       | 730.36           | 757.70        | High memory, moderate accuracy |
-| ResNet-152       | 910.55           | 937.89        | Very high memory, lower accuracy than DenseNet-201 |
+| DenseNet-201     | 447.12           | 456.87        | Efficient |
+| DenseNet-264     | 484.56           | 492.99        | Slight increase vs 201 |
+| ResNet-50        | 511.77           | 539.10        | Higher than DenseNet-264 |
+| ResNet-101       | 730.36           | 757.70        | High |
+| ResNet-152       | 910.55           | 937.89        | Extremely high |
 
-DenseNets use **less GPU memory** than comparable ResNets, making them practical for fine-grained datasets.
-
----
+- DenseNet-264 still uses less memory than ResNet-50
+- DenseNets scale memory much more efficiently
 
 ### Training Time
 
 | Model            | Avg Epoch Time | Total Training Time | Notes |
 |-----------------|----------------|-------------------|-------|
-| DenseNet-121     | 0h 1m 57s      | 1h 38m 4s         | Fast, small model |
-| DenseNet-169     | 0h 2m 36s      | 2h 10m 0s         | Moderate training time |
-| DenseNet-201     | 0h 3m 2s       | 2h 31m 47s        | Slightly slower per epoch, but very efficient vs accuracy |
-| ResNet-50        | 0h 1m 36s      | 1h 20m 15s        | Fast, but lower accuracy |
-| ResNet-101       | 0h 2m 38s      | 2h 11m 50s        | Slower, modest accuracy gains |
-| ResNet-152       | 0h 3m 32s      | 2h 57m 17s        | Slowest, large memory, moderate accuracy |
+| DenseNet-121     | 0h 1m 57s      | 1h 38m 4s         | Small, fast |
+| DenseNet-169     | 0h 2m 36s      | 2h 10m 0s         | Moderate |
+| DenseNet-201     | 0h 3m 2s       | 2h 31m 47s        | Good balance |
+| DenseNet-264     | 0h 3m 54s      | 3h 15m 1s         | Slowest DenseNet |
+| ResNet-50        | 0h 1m 36s      | 1h 20m 15s        | Fastest overall |
+| ResNet-101       | 0h 2m 38s      | 2h 11m 50s        | Slower |
+| ResNet-152       | 0h 3m 32s      | 2h 57m 17s        | Very slow |
 
-DenseNet-201 strikes a good balance: higher accuracy than all ResNets with **less training time than ResNet-152**, despite being deeper.
+- DenseNet-264 increases cost noticeably over 201
+- DenseNet-201 remains the best trade-off
+- ResNet-50 is fastest but sacrifices significant accuracy
 
 ---
 
 ### Overall Observations
 
 - **Accuracy & Confusion**:
-  - DenseNet-201 is superior for distinguishing visually similar classes. Smaller DenseNets and ResNets confuse similar species frequently.
+  - DenseNet-264 achieves the best results overall.
+  - DenseNet-201 is nearly as strong, with fewer resources.
+  - Smaller DenseNets and ResNets struggle with fine-grained distinctions.
+
 - **Efficiency**:
-  - DenseNets achieve **higher accuracy with fewer parameters**, less memory, and faster training per effective epoch.
-- **ResNets**:
-  - Larger ResNets (152) consume huge memory and take longer to train, yet do not outperform DenseNet-201.
+  - DenseNets dominate in parameter efficiency and memory usage.
+  - ResNets scale poorly in comparison.
+
+- **Scaling Behavior**:
+  - DenseNet improvements (121 → 169 → 201 → 264) show consistent gains.
+  - ResNet scaling (50 → 101 → 152) shows diminishing returns.
+
 - **Recommendations**:
-  - **DenseNet-201** for accuracy-critical applications.
-  - **DenseNet-169** if moderate accuracy with lower memory/time is needed.
-  - **DenseNet-121** or **ResNet-50** for extremely constrained hardware, but with accuracy compromise.
+  - **DenseNet-264** → Best accuracy (if compute is not a constraint)
+  - **DenseNet-201** → Best overall balance (recommended default)
+  - **DenseNet-169** → Mid-tier option
+  - **DenseNet-121 / ResNet-50** → For constrained environments only
 
 **Conclusion:**  
-DenseNet architectures provide the **best balance of accuracy, efficiency, memory usage, and minimal confusion**, making them ideal for fine-grained classification tasks like this butterfly/moth dataset.
-
+DenseNet architectures—especially **DenseNet-201 and DenseNet-264** provide the best combination of **accuracy, efficiency, and reduced confusion**, making them highly suitable for fine-grained image classification tasks.
 
 ## Running
 

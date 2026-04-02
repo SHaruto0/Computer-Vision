@@ -10,7 +10,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 from models.resnet import ResNet50, ResNet101, ResNet152
-from models.densenet import DenseNet121, DenseNet169, DenseNet201
+from models.densenet import DenseNet121, DenseNet169, DenseNet201, DenseNet264
 from dataset import ButterflyDataset, build_transforms
 from utils import print_model_size, save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
@@ -48,6 +48,8 @@ def inference(params_path, topk=(1,5)):
         model = DenseNet169(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
     elif model_name == "densenet201":
         model = DenseNet201(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "densenet264":
+        model = DenseNet264(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
     elif model_name == "resnet50":
         model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
     elif model_name == "resnet101":

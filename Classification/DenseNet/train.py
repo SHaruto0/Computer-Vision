@@ -10,14 +10,14 @@ from torch.utils.data import DataLoader
 
 from dataset import ButterflyDataset, build_transforms
 from models.resnet import ResNet50, ResNet101, ResNet152
-from models.densenet import DenseNet121, DenseNet169, DenseNet201
+from models.densenet import DenseNet121, DenseNet169, DenseNet201, DenseNet264
 from utils import set_seed, save_training_plots, BASE_PATH, DATA_CFG, DENSENET_CFG, RESNET_CFG
 
 def train(model_name):
     """
     Train a DenseNet model on the butterfly dataset.
     Args:
-        model_name (str): One of "densenet121", "densenet169", "densenet201"
+        model_name (str): One of "densenet121", "densenet169", "densenet201", "densenet264"
     """
     # Config
     set_seed(42)
@@ -55,6 +55,9 @@ def train(model_name):
         MODEL_CFG = DENSENET_CFG
     elif model_name == "densenet201":
         model = DenseNet201(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+        MODEL_CFG = DENSENET_CFG
+    elif model_name == "densenet264":
+        model = DenseNet264(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
         MODEL_CFG = DENSENET_CFG
     elif model_name == "resnet50":
         model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
