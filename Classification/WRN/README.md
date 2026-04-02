@@ -8,11 +8,16 @@ In addition, we include a comparative study with **ResNet variants (ResNet-50, R
 
 ---
 
+## Hardware
+
+- GPU: P100 (Kaggle Notebook)
+
 ## Dataset
+
+CIFAR-100
 
 https://www.kaggle.com/datasets/melikechan/cifar100
 
-CIFAR-100
 ```
 data/cifar100/
 ├── train/
@@ -41,8 +46,6 @@ data/cifar100/
 - Global Average Pooling
 - Fully connected classifier → `num_classes`
 
----
-
 ### Depth & Width
 
 | Model     | Depth | Width Factor |
@@ -57,8 +60,6 @@ data/cifar100/
 - Loss: CrossEntropy
 - Epochs: 140
 - Supports checkpoint resume (`start_from` parameter in `wrn.yaml`)
-
----
 
 ## Results
 
@@ -165,8 +166,6 @@ data/cifar100/
 - Average epoch time: 0h 4m 3s
 - Total training time: 9h 29m 17s
 
----
-
 ## Inference & Outputs
 
 Each model reports:
@@ -184,8 +183,6 @@ Each model reports:
 ### Saved files:
 
 ```
-### Saved files:
-
 outputs/
 ├── plots/
 │   ├── wrn/
@@ -218,8 +215,6 @@ outputs/
     ├── resnet101_per_class_accuracy.csv
     └── resnet152_per_class_accuracy.csv
 ```
-
----
 
 ### Plots
 
@@ -270,8 +265,6 @@ outputs/
 
 </div>
 
----
-
 ## Analysis
 
 - **Overall Accuracy:**
@@ -309,8 +302,6 @@ outputs/
   - Fine-grained regularization or attention mechanisms
   - Class-specific augmentation for commonly confused categories
  
----
-
 ## Running
 
 ### Local Computer
@@ -338,5 +329,6 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
+- Insert your username for model and config path!
 - Create a dataset named `wide resnet` with the three yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `wrn` and upload the corresponding model checkpoint parameters.

@@ -2,8 +2,8 @@ import yaml
 import torch
 import random
 import numpy as np
-from pathlib import Path
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 BASE_PATH = Path(__file__).resolve().parent
 
@@ -94,6 +94,43 @@ def summarize_checkpoint_times(ckpt_path):
     
     return avg_time, total_time
 
-WRN_CFG = load_yaml("configs/wrn.yaml")
-RESNET_CFG = load_yaml("configs/resnet.yaml")
+def print_model_size(model, device, input_size=(3, 224, 224)):
+    """
+    Prints the number of parameters and approximate memory size of a PyTorch model.
+
+    Args:
+        model (nn.Module): The model to inspect.
+        input_size (tuple): Input size (C, H, W), default is (3, 224, 224).
+    """
+    # Total parameters
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    # Estimate model size (bytes)
+    # float32 = 4 bytes
+    size_bytes = total_params * 4
+    size_mb = size_bytes / (1024 ** 2)
+
+    print(f"Model: {model.__class__.__name__}")
+    print(f"Total parameters: {total_params:,}")
+    print(f"Trainable parameters: {trainable_params:,}")
+    print(f"Approximate size: {size_mb:.2f} MB")
+
+    # Measure memory usage
+    if device.type == 'cuda':
+        torch.cuda.reset_peak_memory_stats(device)
+    
+    dummy_input = torch.randn(1, *input_size).to(device)
+    model.eval()
+    with torch.no_grad():
+        _ = model(dummy_input)
+
+    if device.type == 'cuda':
+        mem_alloc = torch.cuda.memory_allocated(device) / (1024 ** 2)
+        mem_peak = torch.cuda.max_memory_allocated(device) / (1024 ** 2)
+        print(f"GPU Memory Allocated: {mem_alloc:.2f} MB")
+        print(f"GPU Peak Memory Allocated: {mem_peak:.2f} MB")
+
 DATA_CFG = load_yaml("configs/data.yaml")
+DENSENET_CFG = load_yaml("configs/densenet.yaml")
+RESNET_CFG = load_yaml("configs/resnet.yaml")

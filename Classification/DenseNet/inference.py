@@ -5,21 +5,24 @@ import csv
 import random
 from tqdm import tqdm
 from PIL import Image
+from pathlib import Path
 from collections import Counter
 import matplotlib.pyplot as plt
 
-from models.vgg16 import VGG16
-from dataset import ImageNetDataset, build_transforms
-from utils import save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
+from models.resnet import ResNet50, ResNet101, ResNet152
+from models.densenet import DenseNet121, DenseNet169, DenseNet201, DenseNet264
+from dataset import ButterflyDataset, build_transforms
+from utils import print_model_size, save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
 def inference(params_path, topk=(1,5)):
+    model_name = "_".join(params_path.split("_")[:2])
     # Setup
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
     # Create output directory for plots
-    plots_dir = BASE_PATH / "outputs" / "plots"
+    plots_dir = BASE_PATH / "outputs" / "plots" / model_name
     plots_dir.mkdir(parents=True, exist_ok=True)
 
     # Create output directory for metrics
@@ -27,7 +30,7 @@ def inference(params_path, topk=(1,5)):
     metric_dir.mkdir(parents=True, exist_ok=True)
 
     # Data
-    test_dataset = ImageNetDataset(
+    test_dataset = ButterflyDataset(
         root=DATA_CFG["root"], 
         split="test",  
         transform=build_transforms(DATA_CFG["image_size"], train=False)
@@ -36,15 +39,37 @@ def inference(params_path, topk=(1,5)):
         test_dataset, batch_size=64, shuffle=False, num_workers=1
     )
 
-    idx_to_class = test_dataset.classes
+    idx_to_class = test_dataset.idx_to_class
 
-    # Model
-    model = VGG16(num_classes=DATA_CFG.get("num_classes", len(idx_to_class))).to(device)
-
+    # Model, loss, optimizer
+    if model_name == "densenet121":
+        model = DenseNet121(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "densenet169":
+        model = DenseNet169(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "densenet201":
+        model = DenseNet201(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "densenet264":
+        model = DenseNet264(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "resnet50":
+        model = ResNet50(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "resnet101":
+        model = ResNet101(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+    elif model_name == "resnet152":
+        model = ResNet152(img_channels=3, num_classes=DATA_CFG.get("num_classes", 100)).to(device)
+   
     ckpt_path = BASE_PATH / "outputs" / "checkpoints" / params_path
     checkpoint = torch.load(ckpt_path, map_location=device)
-    model.load_state_dict(checkpoint["model_state"])
+    state_dict = checkpoint["model_state_dict"]
+    
+    new_state_dict = {}
+    for k, v in state_dict.items():
+        new_key = k.replace("module.", "")
+        new_state_dict[new_key] = v
+    
+    model.load_state_dict(new_state_dict)
     model.eval()
+
+    print_model_size(model, device)
 
     # Metrics Tracking
     total = 0
@@ -87,6 +112,9 @@ def inference(params_path, topk=(1,5)):
         acc = topk_correct[i] / total
         print(f"Top-{k}: {acc:.4f}")
 
+    print(f"Highest test accuracy: {max(checkpoint.get('test_acc_history', [0])):.4f}")
+    print(f"at epoch: {checkpoint.get('test_acc_history', []).index(max(checkpoint.get('test_acc_history', [0])))}")
+    
     # Confusion analysis
     most_confused = confusion_counter.most_common(10)
 
@@ -94,8 +122,8 @@ def inference(params_path, topk=(1,5)):
     for (t, p), count in most_confused:
         print(f"{idx_to_class[t]} -> {idx_to_class[p]} : {count}")
 
-    # Bar plot for top 10 most confused
     if most_confused:
+        # Bar plot for top 10 most confused
         labels_plot = [
             f"{idx_to_class[t]}->{idx_to_class[p]}"
             for (t, p), _ in most_confused
@@ -109,61 +137,50 @@ def inference(params_path, topk=(1,5)):
         plt.title("Top 10 Most Confused Class Pairs")
         plt.tight_layout()
 
-        plot_path = plots_dir / "most_confused_pairs.png"
+        plot_path = plots_dir / f"{model_name}_most_confused_pairs.png"
         plt.savefig(plot_path)
         plt.close()
         print(f"\nConfusion plot saved to: {plot_path}")
 
-    # Selected pairs for 3x4 image grid
-    selected_pairs = [
-        ("sidewinder", "horned_viper"),
-        ("desktop_computer", "screen"),
-        ("blenheim_spaniel", "welsh_springer_spaniel"),
-        ("barn_spider", "wolf_spider"),
-        ("potpie", "bagel"),
-        ("bedlington_terrier", "miniature_poodle")
-    ]
-    class_name_to_idx = {name: idx for idx, name in enumerate(idx_to_class)}
+        # Automatic Top-10 Confused Image Grid
 
-    fig, axes = plt.subplots(3, 4, figsize=(16, 12))
-    axes = axes.reshape(3, 4)  # ensure shape
+        fig, axes = plt.subplots(5, 4, figsize=(18, 20))
+        axes = axes.reshape(5, 4)
 
-    for idx, (true_name, pred_name) in enumerate(selected_pairs):
-        row = idx // 2
-        col = (idx % 2) * 2  # 0 or 2
+        for idx, ((t, p), _) in enumerate(most_confused):
+            row = idx // 2
+            col = (idx % 2) * 2
 
-        t = class_name_to_idx[true_name]
-        p = class_name_to_idx[pred_name]
+            true_name = idx_to_class[t]
+            pred_name = idx_to_class[p]
 
-        # Get all images for true and predicted classes
-        t_imgs = [img_path for img_path, label in test_dataset.samples if label == t]
-        p_imgs = [img_path for img_path, label in test_dataset.samples if label == p]
+            # Get filepaths for true and predicted classes
+            t_imgs = [img_path for img_path, label in test_dataset.data_path if label == t]
+            p_imgs = [img_path for img_path, label in test_dataset.data_path if label == p]
 
-        # Randomly pick 2 images per class
-        t_img1, t_img2 = random.sample(t_imgs, 2)
-        p_img1, p_img2 = random.sample(p_imgs, 2)
+            # Sample up to 2 images per class safely
+            t_sample = random.sample(t_imgs, min(2, len(t_imgs)))
+            p_sample = random.sample(p_imgs, min(2, len(p_imgs)))
 
-        img_list = [
-            (t_img1, true_name),
-            (p_img1, pred_name),
-            (t_img2, true_name),
-            (p_img2, pred_name)
-        ]
+            # Fill 2 columns (true vs predicted)
+            for i in range(2):
+                if i < len(t_sample):
+                    img_path = Path(DATA_CFG["root"]) / t_sample[i]
+                    axes[row, col].imshow(Image.open(img_path).convert("RGB"))
+                    axes[row, col].set_title(f"True: {true_name}", fontsize=9)
+                    axes[row, col].axis("off")
 
-        for i in range(2):
-            axes[row, col + i].imshow(Image.open(img_list[i][0]).convert("RGB"))
-            axes[row, col + i].axis("off")
-            axes[row, col + i].set_title(img_list[i][1], fontsize=10)
+                if i < len(p_sample):
+                    img_path = Path(DATA_CFG["root"]) / p_sample[i]
+                    axes[row, col + 1].imshow(Image.open(img_path).convert("RGB"))
+                    axes[row, col + 1].set_title(f"Pred: {pred_name}", fontsize=9)
+                    axes[row, col + 1].axis("off")
 
-        # Black vertical line between pair columns
-        axes[row, col + 1].spines['left'].set_color('black')
-        axes[row, col + 1].spines['left'].set_linewidth(2)
-
-    plt.tight_layout()
-    sample_img_path = plots_dir / "most_confused_pairs_samples.png"
-    plt.savefig(sample_img_path)
-    plt.close()
-    print(f"\nSample images of confused pairs saved to: {sample_img_path}")
+        plt.tight_layout()
+        sample_img_path = plots_dir / f"{model_name}_most_confused_pairs_samples.png"
+        plt.savefig(sample_img_path)
+        plt.close()
+        print(f"\nSample images of confused pairs saved to: {sample_img_path}")
 
     # Per-class accuracy CSV
     class_accuracy = []
@@ -176,7 +193,7 @@ def inference(params_path, topk=(1,5)):
     # Sort high -> low accuracy
     class_accuracy.sort(key=lambda x: x[2], reverse=True)
 
-    csv_path = metric_dir / "per_class_accuracy.csv"
+    csv_path = metric_dir / f"{model_name}_per_class_accuracy.csv"
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["class_id", "class_name", "accuracy", "correct", "total"])
@@ -187,16 +204,17 @@ def inference(params_path, topk=(1,5)):
 
     # Save plots
     save_training_plots(
+        model_name=model_name,
         loss_history=checkpoint.get("loss_history", []),
         train_acc_history=checkpoint.get("train_acc_history", []),
         test_acc_history=checkpoint.get("test_acc_history", []),
         epoch_times=checkpoint.get("epoch_times", []),
-        output_dir="outputs/plots"
+        output_dir=plots_dir
     )
 
     print("\nPlots saved")
 
 if __name__ == "__main__":
-    param_path = "vgg16_epoch_100.pth"
+    param_path = "densenet121_epoch_50.pth"
     inference(param_path)
     summarize_checkpoint_times(param_path)

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from models.wrn import WRN28_10
 from models.resnet import ResNet50, ResNet101, ResNet152
 from dataset import CIFAR100, build_transforms
-from utils import set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
+from utils import save_training_plots, set_seed, summarize_checkpoint_times, BASE_PATH, DATA_CFG
 
 def inference(params_path, topk=(1,5)):
     model_name = "_".join(params_path.split("_")[:2])
@@ -22,7 +22,7 @@ def inference(params_path, topk=(1,5)):
     print("Using device:", device)
 
     # Create output directory for plots
-    plots_dir = BASE_PATH / "outputs" / "plots"
+    plots_dir = BASE_PATH / "outputs" / "plots" / model_name
     plots_dir.mkdir(parents=True, exist_ok=True)
 
     # Create output directory for metrics
@@ -187,6 +187,17 @@ def inference(params_path, topk=(1,5)):
 
     print(f"\nPer-class accuracy CSV saved to: {csv_path}")
 
+    # Save plots
+    save_training_plots(
+        model_name=model_name,
+        loss_history=checkpoint.get("loss_history", []),
+        train_acc_history=checkpoint.get("train_acc_history", []),
+        test_acc_history=checkpoint.get("test_acc_history", []),
+        epoch_times=checkpoint.get("epoch_times", []),
+        output_dir=plots_dir
+    )
+
+    print("\nPlots saved")
 
 if __name__ == "__main__":
     param_path = "wrn28_10_epoch_140.pth"

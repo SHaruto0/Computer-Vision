@@ -4,7 +4,13 @@ This project implements and trains a VGG16-style CNN in PyTorch for image classi
 
 ---
 
+## Hardware
+
+- GPU: P100 (Kaggle Notebook)
+
 ## Dataset
+
+ImageNet
 
 https://www.kaggle.com/datasets/dimensi0n/imagenet-256
 
@@ -29,16 +35,12 @@ data/imagenet/
 - Batch size: 64, 4 workers
 - Classes: 100 (to reduce computation)
 
----
-
 ## Model
 
 - VGG16 with BatchNorm
 - 5 convolutional blocks with MaxPooling
 - Fully connected layers: 4096 → 4096 → num_classes
 - ReLU + Dropout + BatchNorm
-
----
 
 ## Training
 
@@ -47,8 +49,6 @@ data/imagenet/
 - Loss: CrossEntropy
 - Epochs: 100
 - Can resume from checkpoint (`start_from` parameter)
-
----
 
 ## Inference & Results
 
@@ -100,8 +100,6 @@ Sample images of most confused pairs (left two images form one pair, right two i
 
 </div>
 
----
-
 ## Running
 
 Prepare dataset:
@@ -127,6 +125,7 @@ python inference.py
 ### Kaggle Notebook
 
 - Or run the provided notebook in Kaggle or Colab (update paths if needed).
+- Insert your username for model and config path!
 - Create a dataset called `imagenet` and upload the processed train/test data created from `dataset.py` or in kaggle notebook.
 - Create a dataset named `VGG16 Config` with the two config yaml files. Or simply upload it if on Colab.
 - When inferencing, initialize a model named `VGG16` and upload the corresponding model checkpoint parameters.

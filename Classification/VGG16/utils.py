@@ -39,10 +39,10 @@ def save_training_plots(
     plt.plot(epochs, loss_history, label="Train Loss")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    plt.title("Training Loss")
+    plt.title("Training Loss - VGG16")
     plt.legend()
     plt.grid(True)
-    plt.savefig(output_dir / "loss.png")
+    plt.savefig(output_dir / "vgg16_loss.png")
     plt.close()
 
     # Accuracy plot
@@ -51,10 +51,10 @@ def save_training_plots(
     plt.plot(epochs, test_acc_history, label="Test Accuracy")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    plt.title("Train vs Test Accuracy")
+    plt.title("Train vs Test Accuracy - VGG16")
     plt.legend()
     plt.grid(True)
-    plt.savefig(output_dir / "accuracy.png")
+    plt.savefig(output_dir / "vgg16_accuracy.png")
     plt.close()
 
     # Time per epoch plot
@@ -62,10 +62,10 @@ def save_training_plots(
     plt.plot(epochs, epoch_times, label="Time per Epoch (s)")
     plt.xlabel("Epoch")
     plt.ylabel("Seconds")
-    plt.title("Epoch Time")
+    plt.title("Epoch Time - VGG16")
     plt.legend()
     plt.grid(True)
-    plt.savefig(output_dir / "epoch_time.png")
+    plt.savefig(output_dir / "vgg16_epoch_time.png")
     plt.close()
 
     print(f"\nPlots saved to: {output_dir.resolve()}")
