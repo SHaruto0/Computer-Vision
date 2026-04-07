@@ -4,6 +4,7 @@ DCGAN_CONFIG = {
     "input_size": 64,
     "epochs": 20,
     "start_from": None,
-    "lr": 0.0002,
+    "lr_g": 0.0002,
+    "lr_d": 0.0001,
     "beta1": 0.5,
 }

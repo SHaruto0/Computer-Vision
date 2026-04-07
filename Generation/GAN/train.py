@@ -28,6 +28,7 @@ def train():
 
     FIXED_NOISE = torch.randn(64, DCGAN_CONFIG["latent_dim"], 1, 1, device=device)
     REAL_LABEL = 1.
+    REAL_LABEL_SMOOTH = 0.9
     FAKE_LABEL = 0.
 
     # Datasets & loaders
@@ -59,7 +60,7 @@ def train():
 
     criterion = nn.BCELoss()
     optimizerG = optim.Adam(netG.parameters(), lr=DCGAN_CONFIG.get("lr_g", 0.0002), betas=(0.5, 0.999))
-    optimizerD = optim.Adam(netD.parameters(), lr=DCGAN_CONFIG.get("lr_d", 0.0002), betas=(0.5, 0.999))
+    optimizerD = optim.Adam(netD.parameters(), lr=DCGAN_CONFIG.get("lr_d", 0.0001), betas=(0.5, 0.999))
 
     # Checkpoint
     num_epochs = int(DCGAN_CONFIG.get("epochs", 50))
@@ -107,7 +108,7 @@ def train():
             netD.zero_grad()
 
             # Real images
-            label = torch.full((b_size,), REAL_LABEL, device=device)
+            label = torch.full((b_size,), REAL_LABEL_SMOOTH, device=device)
             output_real = netD(images).view(-1)
             loss_D_real = criterion(output_real, label)
             loss_D_real.backward()
