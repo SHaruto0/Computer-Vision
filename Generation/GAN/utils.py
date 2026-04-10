@@ -57,66 +57,72 @@ def save_training_plots(
 
     print(f"\nPlots saved to: {output_dir.resolve()}")
 
-def summarize_checkpoint_times(ckpt_path):
-    ckpt = torch.load(BASE_PATH / Path("outputs/checkpoints/") / ckpt_path, map_location="cpu")
-    
-    # Check if epoch_times exists
-    if "epoch_times" not in ckpt:
-        print("Checkpoint does not contain 'epoch_times'.")
-        return None
-
-    epoch_times = ckpt["epoch_times"]
-    total_time = sum(epoch_times)
-    avg_time = total_time / len(epoch_times)
-
+def analyze_dcgan_performance(checkpoint, plots_dir):
     def format_hms(seconds):
         h = int(seconds // 3600)
         m = int((seconds % 3600) // 60)
         s = int(seconds % 60)
         return f"{h}h {m}m {s}s"
 
-    print(f"Average epoch time: {format_hms(avg_time)}")
-    print(f"Total training time: {format_hms(total_time)}")
+    print("--- Model Statistics & Training Analysis ---")
     
-    return avg_time, total_time
+    # 1. Parameter and Size Analysis
+    total_params_g = sum(p.numel() for p in checkpoint["model_state_G"].values())
+    total_params_d = sum(p.numel() for p in checkpoint["model_state_D"].values())
+    size_mb_g = (total_params_g * 4) / (1024 ** 2)
+    size_mb_d = (total_params_d * 4) / (1024 ** 2)
 
-def print_model_size(model, device, input_size=(3, 224, 224)):
-    """
-    Prints the number of parameters and approximate memory size of a PyTorch model.
+    print(f"Generator - Total Parameters: {total_params_g:,} | Approx Size: {size_mb_g:.2f} MB")
+    print(f"Discriminator - Total Parameters: {total_params_d:,} | Approx Size: {size_mb_d:.2f} MB")
 
-    Args:
-        model (nn.Module): The model to inspect.
-        input_size (tuple): Input size (C, H, W), default is (3, 224, 224).
-    """
-    # Total parameters
-    total_params = sum(p.numel() for p in model.parameters())
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # 2. History Extraction
+    g_loss = checkpoint.get("G_loss_history", [])
+    d_loss = checkpoint.get("D_loss_history", [])
+    g_times = checkpoint.get("G_epoch_times", [])
+    d_times = checkpoint.get("D_epoch_times", [])
 
-    # Estimate model size (bytes)
-    # float32 = 4 bytes
-    size_bytes = total_params * 4
-    size_mb = size_bytes / (1024 ** 2)
+    # 3. Time Analysis
+    if g_times and d_times:
+        print(f"Generator Mean Time: {np.mean(g_times):.4f}s (Std: {np.std(g_times):.4f}s)")
+        print(f"Discriminator Mean Time: {np.mean(d_times):.4f}s (Std: {np.std(d_times):.4f}s)")
+        total_time = sum(g_times) + sum(d_times)
+        print(f"Total Training Time: {format_hms(total_time)}")
 
-    print(f"Model: {model.__class__.__name__}")
-    print(f"Total parameters: {total_params:,}")
-    print(f"Trainable parameters: {trainable_params:,}")
-    print(f"Approximate size: {size_mb:.2f} MB")
+    # 4. Stability Analysis
+    if len(g_loss) > 10:
+        split = len(g_loss) // 10
+        print(f"Generator Loss Variance (Start): {np.var(g_loss[:split]):.6f}")
+        print(f"Generator Loss Variance (End): {np.var(g_loss[-split:]):.6f}")
 
-    # Measure memory usage
-    if device.type == 'cuda':
-        torch.cuda.reset_peak_memory_stats(device)
-    
-    dummy_input = torch.randn(1, *input_size).to(device)
-    model.eval()
-    with torch.no_grad():
-        _ = model(dummy_input)
+    print(f"Last Recorded Epoch: {checkpoint.get('epoch', 'N/A')}")
+    if g_loss:
+        print(f"Generator Loss Spike: {max(g_loss):.4f} at batch index {np.argmax(g_loss)}")
 
-    if device.type == 'cuda':
-        mem_alloc = torch.cuda.memory_allocated(device) / (1024 ** 2)
-        mem_peak = torch.cuda.max_memory_allocated(device) / (1024 ** 2)
-        print(f"GPU Memory Allocated: {mem_alloc:.2f} MB")
-        print(f"GPU Peak Memory Allocated: {mem_peak:.2f} MB")
-
+    # 5. Plotting Losses and Times
+    if g_loss and d_loss:
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+        
+        # Loss Plot
+        ax1.plot(g_loss, label="G Loss", alpha=0.7)
+        ax1.plot(d_loss, label="D Loss", alpha=0.7)
+        ax1.set_title("Training Loss History")
+        ax1.set_xlabel("Batch Iteration")
+        ax1.set_ylabel("Loss")
+        ax1.legend()
+        
+        # Time Plot
+        if g_times:
+            ax2.plot(g_times, label="G Batch Time", color='green', alpha=0.5)
+            ax2.plot(d_times, label="D Batch Time", color='red', alpha=0.5)
+            ax2.set_title("Processing Time per Batch")
+            ax2.set_xlabel("Batch Iteration")
+            ax2.set_ylabel("Seconds")
+            ax2.legend()
+        
+        plt.tight_layout()
+        plt.savefig(plots_dir / f"metrics_epoch_{checkpoint['epoch']}.png")
+        print(f"Metrics plot saved to: {plots_dir}")
+        
 def save_progression_images(netG, fixed_noise, epoch):
     netG.eval()
     
