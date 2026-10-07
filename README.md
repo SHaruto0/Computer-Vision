@@ -5,9 +5,10 @@ This repository tracks my progress as I experiment with different computer visio
 ## Completed (Chronological Order)
 - Image classification
     - VGG16
-    - ResNet
-    - Wide ResNet
-    - DenseNet
+    - ResNet (50/101/152)
+    - Wide ResNet (28-10)
+    - DenseNet (121/169/201)
+    - MobileNetV4 (Conv-S)
 
 ## In Progress
 - Image classification
