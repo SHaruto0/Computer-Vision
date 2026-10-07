@@ -1,0 +1,4 @@
+model,params_M,macs_G,gpu_bs1_ms,gpu_bs64_ms,gpu_bs64_imgs,peak_mem_MB,cpu_bs1_ms
+conv-s,2.62,0.185,4.70,18.64,3434,293,15.28
+resnet50,23.71,4.087,6.05,175.13,365,850,86.57
+densenet121,7.06,2.833,14.92,181.16,353,629,91.36
