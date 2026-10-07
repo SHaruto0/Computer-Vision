@@ -1,10 +1,10 @@
 # MobileNetV4-Conv-S Implemented from Scratch
 
-This project implements and trains **MobileNetV4-Conv-S** from scratch in PyTorch for image classification on ImageNet.
+Built MobileNetV4-Conv-S in PyTorch from the paper's architecture tables, trained it on ImageNet, and benchmarked it against ResNet-50 and DenseNet-121.
 
-The architecture follows the MobileNetV4 design, whose central contribution is the **Universal Inverted Bottleneck (UIB)** block: a single block with two optional depthwise convolutions that subsumes the Inverted Bottleneck, ConvNext, and FFN designs, and introduces a fourth variant (ExtraDW). This lets architecture search choose the block type per layer instead of committing to one design network-wide.
+The interesting idea in MobileNetV4 is the **Universal Inverted Bottleneck (UIB)**: one block with two optional depthwise convolutions that covers the Inverted Bottleneck, ConvNext, and FFN designs, plus a new one called ExtraDW. Instead of picking a block type for the whole network, architecture search picks per layer.
 
-In addition, we include a comparative study with **ResNet-50** and **DenseNet-121** to analyze the trade-off between **parameter count, FLOPs, and realized latency**, benchmarking across GPU and CPU at multiple batch sizes and thread counts.
+The comparison with ResNet-50 and DenseNet-121 is where it got interesting. The point was to see whether parameter count and FLOPs actually predict how fast a model runs. They don't.
 
 ---
 
@@ -21,7 +21,7 @@ https://www.kaggle.com/datasets/dimensi0n/imagenet-256
 
 Run `dataset.py` to download and split the data, or set `DOWNLOAD = True` in the Kaggle notebook on the first run.
 
-Once split, upload the `data/imagenet/` folder as a Kaggle Dataset named **`imagenet`** so later runs can mount it directly without re-downloading or re-splitting. Reusing the same uploaded split is what keeps the three models comparable; re-running `process_data` would reshuffle and produce a different train/test split.
+Once it's split, upload the `data/imagenet/` folder as a Kaggle Dataset named **`imagenet`**. Later runs can mount it directly instead of re-downloading. Worth doing, since re-running `process_data` reshuffles and gives you a different split, which would break the comparison between models.
 
 - ImageNet-style folder structure:
 
@@ -45,7 +45,7 @@ data/imagenet/
 - Classes: 100 (to reduce computation)
 - Split: 80/20 train/test
 
-> **Note:** the test split is a random holdout from the ImageNet training pool, not the official validation set. Accuracies are not directly comparable to published ImageNet numbers.
+> **Note:** the test split is a holdout from the ImageNet training pool, not the official validation set. So the accuracies here aren't directly comparable to published ImageNet numbers.
 
 ## Model
 
@@ -65,7 +65,7 @@ data/imagenet/
 
 ### Block Types
 
-**UIB (Universal Inverted Bottleneck)** has two optional depthwise slots around the expansion:
+**UIB** is an inverted bottleneck with two optional depthwise slots:
 
 ```
 [DW K1]      optional, before expand
@@ -75,7 +75,7 @@ PW project
 + skip if stride 1 and in == out
 ```
 
-Which slots are filled determines the block identity:
+Which slots you fill decides what the block actually is:
 
 | K1  | K2  | Block            |
 | --- | --- | ---------------- |
@@ -84,11 +84,11 @@ Which slots are filled determines the block identity:
 | on  | on  | ExtraDW          |
 | off | off | FFN              |
 
-**FusedIB** merges the expansion pointwise and the depthwise into one regular 3×3 convolution. Used only in the first two stages, where resolution is high and channel count is low, making a dense convolution more hardware-efficient than a depthwise one.
+**FusedIB** folds the expansion pointwise and the depthwise into a single regular 3×3 conv. It only shows up in the first two stages, where resolution is high and there aren't many channels yet, so a dense conv keeps the hardware busier than a depthwise one would.
 
 ### Design Constraints
 
-Following the paper, the implementation excludes Squeeze-and-Excite, GELU, and LayerNorm, all of which are poorly supported on mobile accelerators. ReLU is applied only in the expanded part of each block; the start depthwise and the projection are linear.
+No Squeeze-and-Excite, no GELU, no LayerNorm. The paper drops all three because they're slow on mobile accelerators, even though SE in particular helps accuracy. ReLU only appears in the wide part of each block; the start depthwise and the projection are both linear.
 
 ### Model Sizes
 
@@ -98,11 +98,11 @@ Following the paper, the implementation excludes Squeeze-and-Excite, GELU, and L
 | DenseNet-121       | 7.06 M  | 2.833 G |
 | ResNet-50          | 23.71 M | 4.087 G |
 
-Parameter counts are for 100 classes. At the paper's 1000 classes, Conv-S is 3.77 M, matching the published 3.8 M.
+Those counts are at 100 classes. At the paper's 1000, Conv-S comes out to 3.77 M, which lines up with the published 3.8 M.
 
 ## Training
 
-Each architecture uses the recipe appropriate to its family. Data, split, seed, and epoch count are identical across all three.
+Each architecture gets the recipe its family normally uses. Data, split, seed, and epoch count are the same across all three.
 
 |                 | MobileNetV4-Conv-S      | ResNet-50 / DenseNet-121      |
 | --------------- | ----------------------- | ----------------------------- |
@@ -324,57 +324,57 @@ outputs/
 
 ## Analysis
 
-- **Overall Accuracy:**
-  - DenseNet-121 achieves the highest Top-1 accuracy at **83.83%**, with ResNet-50 close behind (**83.31%**) and MobileNetV4-Conv-S lower (**79.45%**).
-  - MobileNetV4-Conv-S gives up roughly 4 points of Top-1 while using **9× fewer parameters** than ResNet-50 and **22× fewer MACs**.
-  - Top-5 accuracy is consistently strong across all models (93–95%).
+- **Accuracy:**
+  - DenseNet-121 came out on top at **83.83%**, with ResNet-50 right behind at **83.31%**. MobileNetV4-Conv-S landed at **79.45%**, about 4 points back.
+  - That's a reasonable trade. Conv-S uses 9× fewer parameters than ResNet-50 and 22× fewer MACs to give up those 4 points.
+  - Top-5 is close across all three (93-95%).
 
-- **FLOPs Do Not Predict Latency:**
-  - The central finding. MobileNetV4-Conv-S has 22.1× fewer MACs than ResNet-50, but the realized speedup varies enormously with execution context: **9.4× at GPU batch 64, only 1.3× at GPU batch 1, and 13.4× on single-threaded CPU.**
-  - At batch size 1 there is not enough parallel work to hide memory latency, so time is dominated by kernel launches and memory traffic rather than arithmetic. The MAC advantage nearly vanishes.
-  - DenseNet-121 makes the point more sharply still: it has **1.4× fewer MACs and 3.4× fewer parameters** than ResNet-50, yet is **2.5× slower at GPU batch 1** and slowest of all three to train. Its dense concatenations keep many intermediate tensors alive, making it memory-bound despite a low FLOP count.
-  - This is the effect MobileNetV4 is explicitly designed around: the paper's roofline analysis targets Pareto-optimality across hardware with very different compute-to-bandwidth ratios, rather than minimizing FLOPs alone.
+- **FLOPs don't predict latency:**
+  - This is the part worth paying attention to. Conv-S has 22.1× fewer MACs than ResNet-50, so you'd expect it to be roughly 22× faster. What actually happened: **9.4× at GPU batch 64, 1.3× at GPU batch 1, and 13.4× on a single CPU thread.**
+  - Same two models, same hardware, three wildly different answers. At batch 1 there isn't enough parallel work to hide memory latency, so time goes to kernel launches and moving data around rather than arithmetic. The MAC advantage basically evaporates.
+  - DenseNet-121 shows it even better. It has **1.4× fewer MACs and 3.4× fewer parameters** than ResNet-50, and it's still **2.5× slower at GPU batch 1** and the slowest of all three to train. All those concatenations keep intermediate tensors alive, so it's memory-bound no matter how few FLOPs it needs.
+  - This is exactly what MobileNetV4 is designed around. The paper's roofline analysis aims for Pareto-optimality across hardware with very different compute-to-bandwidth ratios, rather than just minimizing FLOPs.
 
-- **Thread Scaling:**
-  - ResNet-50 and DenseNet-121 both speed up going from 1 to 4 CPU threads (1.5× and 1.4× respectively).
-  - MobileNetV4-Conv-S gets **slower** (14.8 ms → 23.3 ms). Its per-layer work is small enough that thread synchronization overhead exceeds the parallel gain.
-  - Practical consequence: lightweight models should be pinned to a single thread for batch-1 inference.
+- **Thread scaling:**
+  - ResNet-50 and DenseNet-121 both get faster going from 1 to 4 CPU threads (1.5× and 1.4×).
+  - Conv-S gets **slower**: 14.8 ms to 23.3 ms. The per-layer work is small enough that thread synchronization costs more than the parallelism saves.
+  - Practical takeaway: pin lightweight models to one thread for batch-1 inference.
 
-- **Memory Footprint:**
+- **Memory:**
   - Peak GPU memory at batch 64: Conv-S 293 MB, DenseNet-121 629 MB, ResNet-50 850 MB.
-  - DenseNet-121's footprint is high relative to its parameter count, again reflecting concatenation-driven activation memory rather than weights.
+  - DenseNet's number is high for how few parameters it has, which is the concatenation activations again rather than weights.
 
-- **Confusion Patterns:**
-  - All three models struggle with the same visually similar classes:
-    - architecture: _castle ↔ palace_, _library → palace_
+- **What the models get wrong:**
+  - All three trip on the same visually similar classes:
+    - buildings: _castle ↔ palace_, _library → palace_
     - marine life: _conch ↔ hermit_crab_, _crayfish → hermit_crab_
     - dog breeds: _schipperke ↔ groenendael_
     - snakes: _night_snake ↔ king_snake_
-  - MobileNetV4-Conv-S shows additional coarse errors the larger models avoid (_toy_poodle → teddy_, _english_springer → saint_bernard_), suggesting its reduced capacity costs fine-grained discrimination specifically.
+  - Conv-S makes some coarser mistakes the bigger models don't (_toy_poodle → teddy_, _english_springer → saint_bernard_), which suggests the capacity it gave up specifically cost it fine-grained discrimination.
 
-- **Training Efficiency:**
-  - MobileNetV4-Conv-S: fastest (~1m 20s/epoch)
-  - ResNet-50: moderate (~2m 58s/epoch)
-  - DenseNet-121: slowest (~3m 55s/epoch) despite having 3.4× fewer parameters than ResNet-50
+- **Training cost:**
+  - Conv-S: ~1m 20s/epoch
+  - ResNet-50: ~2m 58s/epoch
+  - DenseNet-121: ~3m 55s/epoch, despite having 3.4× fewer params than ResNet-50
 
-- **Key Takeaways:**
-  - Parameter count and FLOP count are poor proxies for latency; memory access patterns often dominate.
-  - Depthwise-separable architectures realize their efficiency advantage on compute-constrained hardware (CPU, mobile) far more than on GPUs with compute to spare.
-  - Architecture evaluation should report measured latency on the target hardware, not FLOPs.
+- **Takeaways:**
+  - Parameter count and FLOPs are poor proxies for speed. Memory access patterns often matter more.
+  - Depthwise-separable architectures pay off much more on compute-constrained hardware (CPU, mobile) than on a GPU with compute to spare.
+  - If you care about latency, measure it on the hardware you're actually deploying to.
 
-- **Potential Improvements:**
-  - int8 quantization, the standard mobile deployment path, to measure accuracy retention and further CPU speedup
-  - Per-layer roofline analysis sweeping the compute-to-bandwidth ridge point, reproducing the paper's hardware-independence argument analytically
-  - Stronger augmentation (RandAugment, MixUp) and longer training; the paper trains Conv-S for 9600 epochs
-  - MobileNetV4-Hybrid variants, adding Mobile MQA attention to the final stages
-  - Evaluation on the official ImageNet validation set and all 1000 classes
+- **What I'd try next:**
+  - int8 quantization, since that's the real mobile deployment path. Would show both accuracy retention and more CPU speedup.
+  - Per-layer roofline analysis sweeping the compute-to-bandwidth ridge point, to reproduce the paper's hardware-independence argument analytically.
+  - Stronger augmentation (RandAugment, MixUp) and longer training. The paper runs Conv-S for 9600 epochs.
+  - The Hybrid variants, which add Mobile MQA attention to the final stages.
+  - Official ImageNet validation set and all 1000 classes.
 
 ## Limitations
 
-- 100 classes rather than 1000, and a held-out split rather than the official validation set, so absolute accuracies are not comparable to published results.
-- 100 training epochs versus the paper's 9600, so MobileNetV4-Conv-S is substantially undertrained relative to its reported 73.8% on full ImageNet.
-- Optimizers differ by architecture (AdamW for MobileNetV4, SGD for ResNet/DenseNet). This is standard practice but means the comparison is architecture-plus-recipe, not architecture alone.
-- Kaggle provided two T4 GPUs, but training and benchmarking ran on a single device (no DataParallel), so all GPU figures are single-T4.
+- 100 classes instead of 1000, and the test set is a holdout from the train pool rather than official val. So the accuracies aren't comparable to published numbers.
+- 100 epochs against the paper's 9600, so Conv-S is heavily undertrained relative to its reported 73.8% on full ImageNet.
+- Different optimizers per architecture (AdamW for MobileNetV4, SGD for the others). Standard practice, but it means this compares architecture-plus-recipe, not architecture alone.
+- Kaggle gave two T4s but training and benchmarking ran on one device, so every GPU number here is single-T4.
 
 ## Running
 
@@ -400,7 +400,7 @@ python train.py densenet121
 python inference.py
 ```
 
-- Make sure checkpoints are in `outputs/checkpoints/` (e.g., `conv-s_best.pth`).
+- Checkpoints go in `outputs/checkpoints/` (e.g., `conv-s_best.pth`).
 - `python inference.py profile` runs params/MACs/latency only, no checkpoints needed.
 
 ### Kaggle Notebook
