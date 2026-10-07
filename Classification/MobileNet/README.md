@@ -19,7 +19,9 @@ ImageNet
 
 https://www.kaggle.com/datasets/dimensi0n/imagenet-256
 
-Download and preprocess the data on your computer by running `dataset.py` or set DOWNLOAD flag to True in kaggle notebook and download the data.
+Run `dataset.py` to download and split the data, or set `DOWNLOAD = True` in the Kaggle notebook on the first run.
+
+Once split, upload the `data/imagenet/` folder as a Kaggle Dataset named **`imagenet`** so later runs can mount it directly without re-downloading or re-splitting. Reusing the same uploaded split is what keeps the three models comparable; re-running `process_data` would reshuffle and produce a different train/test split.
 
 - ImageNet-style folder structure:
 
@@ -403,8 +405,10 @@ python inference.py
 
 ### Kaggle Notebook
 
-- Or run the provided notebook in Kaggle or Colab (update paths if needed).
-- Set `DOWNLOAD = True` on the first run to fetch and split the dataset.
+- Run the provided notebook in Kaggle or Colab (update paths if needed).
+- Insert your Kaggle username where the notebook asks for it.
+- First run: set `DOWNLOAD = True` to fetch and split the dataset, then upload the result as a Kaggle Dataset named **`imagenet`**.
+- Later runs: add the `imagenet` dataset to the notebook and leave `DOWNLOAD = False`.
 - When inferencing, upload the model checkpoints and set `CKPT_DIR` to their path.
 
 ## Reference
